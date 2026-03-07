@@ -15,6 +15,7 @@
 | 날짜 | 작업 | 상태 | 요약 |
 |------|------|------|------|
 | 2026-03-08 | 프로젝트 Init | 완료 | Git 초기화, README/.gitignore 생성, remote 설정, 초기 태스크 작성 |
+| 2026-03-08 | T001: Flutter 프로젝트 초기 생성 | 완료 | Flutter 3.41.4 프로젝트 생성, feature-first 구조, 핵심 의존성, 부트스트랩 코드 |
 
 ---
 
@@ -40,3 +41,11 @@
 - **변경된 파일**: README.md (신규), .gitignore (신규), 07-workplan.md (태스크 추가), 09-working-log.md (Init 기록), 10-changelog.md (Init 기록)
 - **의사결정**: branch 이름을 master → main으로 변경 (GitHub Flow 관례). remote: https://github.com/seongmin15/Lunch_Roulette_Simple.git
 - **미완료/후속**: 07-workplan 태스크 리스트 승인 후 T001부터 작업 시작
+
+### 2026-03-08 — T001: Flutter 프로젝트 초기 생성 및 기본 구조 설정
+
+- **작업**: flutter create로 프로젝트 생성, feature-first 디렉토리 구조 설정, 핵심 의존성 추가, 부트스트랩 코드 작성
+- **계획 범위**: 프로젝트 생성, lib/ 디렉토리 구조, pubspec.yaml 의존성, main.dart/app.dart/router.dart/theme.dart, .env.example, analysis_options.yaml
+- **변경된 파일**: pubspec.yaml, lib/main.dart, lib/app/app.dart, lib/app/router.dart, lib/app/theme.dart, lib/features/home/screens/home_screen.dart, .env.example, .env, analysis_options.yaml, test/widget_test.dart, lib/features/*/에 .gitkeep 파일들
+- **의사결정**: Flutter SDK를 C:/flutter에 설치 (시스템에 미설치 상태였음). 테마 seed color로 orange 선택 (음식 앱 컨셉). Material 3 사용.
+- **미완료/후속**: T002 위치 권한 요청 및 현재 위치 조회 기능

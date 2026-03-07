@@ -68,17 +68,17 @@ Any active status -> Cancelled
      - Record Result when Done. -->
 
 ### T001: Flutter 프로젝트 초기 생성 및 기본 구조 설정
-- Status: Ready
+- Status: Done
 - Service: lunch-roulette-app
 - Description: `flutter create`로 프로젝트를 생성하고, feature-first 디렉토리 구조(`lib/features/`, `lib/shared/`)를 잡는다. 핵심 의존성(Riverpod, Dio, GoRouter, flutter_dotenv 등)을 pubspec.yaml에 추가하고, main.dart 부트스트랩 코드를 작성한다.
 - Acceptance Criteria:
-  - [ ] flutter create로 프로젝트 생성 완료
-  - [ ] lib/features/ 및 lib/shared/ 디렉토리 구조 생성
-  - [ ] pubspec.yaml에 핵심 의존성 추가 (flutter_riverpod, dio, go_router, flutter_dotenv)
-  - [ ] main.dart에 ProviderScope + MaterialApp.router 부트스트랩 코드 작성
-  - [ ] .env.example 파일 생성 (API 키 플레이스홀더)
-  - [ ] flutter analyze 통과
-- Result:
+  - [x] flutter create로 프로젝트 생성 완료
+  - [x] lib/features/ 및 lib/shared/ 디렉토리 구조 생성
+  - [x] pubspec.yaml에 핵심 의존성 추가 (flutter_riverpod, dio, go_router, flutter_dotenv)
+  - [x] main.dart에 ProviderScope + MaterialApp.router 부트스트랩 코드 작성
+  - [x] .env.example 파일 생성 (API 키 플레이스홀더)
+  - [x] flutter analyze 통과
+- Result: Flutter 3.41.4 프로젝트 생성 완료. Feature-first 구조(home/filter/roulette/restaurant_detail/history) 설정. flutter analyze 에러 0건.
 
 ### T002: 위치 권한 요청 및 현재 위치 조회 기능
 - Status: Ready

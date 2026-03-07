@@ -18,3 +18,9 @@
 
 ### Added
 - 프로젝트 초기 설정: README.md, .gitignore, git 저장소 초기화 및 원격 연결
+- T001: Flutter 프로젝트 생성 및 feature-first 디렉토리 구조 설정
+  - flutter_riverpod, dio, go_router, flutter_dotenv 의존성 추가
+  - main.dart 부트스트랩 (ProviderScope + MaterialApp.router)
+  - app/app.dart, app/router.dart, app/theme.dart 구성
+  - features/ (home, filter, roulette, restaurant_detail, history) 구조 생성
+  - .env.example 생성
