@@ -12,6 +12,10 @@
      작업 내용은 "무엇을 왜" 중심 1줄 요약.
      상태: 진행중 | 완료 | 중단 | 취소 -->
 
+| 날짜 | 작업 | 상태 | 요약 |
+|------|------|------|------|
+| 2026-03-08 | 프로젝트 Init | 완료 | Git 초기화, README/.gitignore 생성, remote 설정, 초기 태스크 작성 |
+
 ---
 
 ## 상세 로그
@@ -29,3 +33,10 @@
 - **의사결정**: 내린 결정과 이유
 - **미완료/후속**: 다음에 이어할 것
 -->
+
+### 2026-03-08 — 프로젝트 Init
+
+- **작업**: Section 7 Init 프로토콜 실행. 전체 문서 리뷰, README.md 생성, .gitignore 생성, git init, 원격 저장소 연결, 초기 커밋 및 push, 07-workplan 초기 태스크 작성.
+- **변경된 파일**: README.md (신규), .gitignore (신규), 07-workplan.md (태스크 추가), 09-working-log.md (Init 기록), 10-changelog.md (Init 기록)
+- **의사결정**: branch 이름을 master → main으로 변경 (GitHub Flow 관례). remote: https://github.com/seongmin15/Lunch_Roulette_Simple.git
+- **미완료/후속**: 07-workplan 태스크 리스트 승인 후 T001부터 작업 시작

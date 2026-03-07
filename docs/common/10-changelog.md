@@ -15,3 +15,6 @@
      한 줄에 "무엇이 어떻게 변했는가"만 간결하게.
      릴리스 시 [Unreleased]를 버전 번호로 전환.
      형식: ## [X.Y.Z] - YYYY-MM-DD -->
+
+### Added
+- 프로젝트 초기 설정: README.md, .gitignore, git 저장소 초기화 및 원격 연결
