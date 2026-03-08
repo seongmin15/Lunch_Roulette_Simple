@@ -226,4 +226,15 @@ Any active status -> Cancelled
   - [x] 기존 92개 테스트 전체 통과
   - [x] flutter analyze 에러 0건
 - Result: HomeScreen의 명령형 ref.listen 방식을 반응형 restaurantFetchTriggerProvider로 리팩터링. location + filter를 모두 watch하여 어느 쪽이 변경되든 자동으로 fetchRestaurants 호출. 전체 92건 통과, flutter analyze 에러 0건.
->>>>>>> f48156b (fix: resolve distance filter not updating restaurant list (T014))
+
+### T013: 룰렛 결과 공유 기능
+- Status: Done
+- Service: lunch-roulette-app
+- Description: 룰렛으로 선택된 식당 결과를 다른 사람에게 공유할 수 있는 기능을 추가한다.
+- Acceptance Criteria:
+  - [x] share_plus 의존성 추가
+  - [x] RouletteScreen에 공유 버튼 추가 (결과 선택 후 표시)
+  - [x] 공유 텍스트 포맷: 식당명, 카테고리, 주소, 거리, placeUrl
+  - [x] 공유 버튼 표시 테스트 추가
+  - [x] flutter analyze 에러 0건
+- Result: share_plus ^10.1.4 추가. RouletteScreen에 IconButton.filledTonal 공유 버튼 추가 (결과 선택 후 표시). 공유 텍스트: [점심 룰렛 결과] + 식당명(카테고리) + 주소 + 거리 + placeUrl. 테스트 1건 추가, 전체 98건 통과. flutter analyze 에러 0건.

@@ -96,6 +96,12 @@
   - HomeScreen의 명령형 ref.listen을 반응형 restaurantFetchTriggerProvider로 리팩터링
   - location + filter를 모두 watch하여 어느 변경이든 자동 fetch 트리거
 
+### Added
+- T013: 룰렛 결과 공유 기능
+  - share_plus ^10.1.4 의존성 추가
+  - RouletteScreen에 공유 버튼 추가 (결과 선택 후 표시)
+  - 공유 텍스트: [점심 룰렛 결과] + 식당명(카테고리) + 주소 + 거리 + placeUrl
+
 ### Changed
 - T012: 가격대 필터를 음식 카테고리 필터로 교체
   - PriceRange enum 제거, FoodCategory enum 추가 (한식/중식/일식/양식/분식/치킨/피자/카페)

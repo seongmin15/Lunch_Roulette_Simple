@@ -91,5 +91,24 @@ void main() {
       expect(find.text('오늘의 점심은'), findsOneWidget);
       expect(find.text('다시 돌리기'), findsOneWidget);
     });
+
+    testWidgets('룰렛이 멈추면 공유 버튼이 표시된다', (tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MaterialApp(
+            home: RouletteScreen(restaurants: _testRestaurants),
+          ),
+        ),
+      );
+
+      // Before spin, no share button
+      expect(find.byIcon(Icons.share), findsNothing);
+
+      await tester.tap(find.text('돌리기'));
+      await tester.pumpAndSettle();
+
+      // After spin, share button appears
+      expect(find.byIcon(Icons.share), findsOneWidget);
+    });
   });
 }

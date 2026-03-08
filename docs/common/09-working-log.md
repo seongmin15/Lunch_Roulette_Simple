@@ -28,6 +28,7 @@
 | 2026-03-08 | T011: 전체 화면 — 하단 바 겹침 수정 | 완료 | edge-to-edge 모드 + SafeArea 적용 (HomeScreen, RouletteScreen) |
 | 2026-03-08 | T012: 카테고리 필터 교체 | 완료 | PriceRange→FoodCategory, FilterChip 멀티셀렉트, filteredRestaurantsProvider |
 | 2026-03-08 | T014: 거리 필터 미갱신 버그 수정 | 완료 | ref.listen → 반응형 restaurantFetchTriggerProvider 리팩터링 |
+| 2026-03-08 | T013: 룰렛 결과 공유 기능 | 완료 | share_plus로 결과 공유 버튼 추가 |
 
 ---
 
@@ -154,3 +155,10 @@
 - **변경된 파일**: lib/features/home/providers/restaurant_list_provider.dart (restaurantFetchTriggerProvider 추가), lib/features/home/screens/home_screen.dart (ref.listen 제거, ref.watch(restaurantFetchTriggerProvider) 사용), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
 - **의사결정**: ref.listen의 stale closure 문제를 근본적으로 해결하기 위해 반응형 Provider 패턴으로 전환. restaurantFetchTriggerProvider가 locationProvider + filterProvider를 모두 watch하여 어느 쪽이 변경되든 자동으로 fetch 트리거.
 - **미완료/후속**: T013 룰렛 결과 공유 기능
+
+### 2026-03-08 — T013: 룰렛 결과 공유 기능
+
+- **작업**: share_plus 의존성 추가, RouletteScreen에 공유 버튼 추가
+- **변경된 파일**: pubspec.yaml (share_plus 추가), lib/features/roulette/screens/roulette_screen.dart (공유 버튼 + _share 메서드), test/features/roulette/screens/roulette_screen_test.dart (공유 버튼 테스트 1건), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
+- **의사결정**: IconButton.filledTonal 스타일로 공유 버튼을 상세 버튼 옆에 배치. 공유 텍스트에 placeUrl이 비어있으면 생략. Share.share() 정적 메서드 사용 (share_plus v10 API).
+- **미완료/후속**: T015 앱 디자인 모던화
