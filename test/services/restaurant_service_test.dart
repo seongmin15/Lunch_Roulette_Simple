@@ -317,9 +317,10 @@ void main() {
         latitude: 37.5665,
         longitude: 126.9780,
         keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6', '일식': 'FD6'},
+        radius: 100,
       );
 
-      // 3 calls made (one per keyword)
+      // 1 step(100m) × 3 keywords = 3 calls
       expect(mockDio.capturedQueryParams.length, 3);
       // Same id deduplicates to 1 result
       expect(result.length, 1);
@@ -395,6 +396,7 @@ void main() {
         latitude: 37.5665,
         longitude: 126.9780,
         keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6'},
+        radius: 100,
       );
 
       expect(result.length, 3); // 4 total - 1 duplicate(id=2)
@@ -447,6 +449,7 @@ void main() {
         latitude: 37.5665,
         longitude: 126.9780,
         keywordToCategoryCode: {'한식': 'FD6', '일식': 'FD6'},
+        radius: 100,
       );
 
       expect(result[0].name, '가까운 식당');
@@ -479,6 +482,7 @@ void main() {
         latitude: 37.5665,
         longitude: 126.9780,
         keywordToCategoryCode: {'한식': 'FD6', '카페': 'CE7'},
+        radius: 100,
       );
 
       // Verify category_group_code per keyword
@@ -491,6 +495,29 @@ void main() {
         (params) => params['query'] == '한식',
       );
       expect(koreanCall['category_group_code'], 'FD6');
+    });
+
+    test('100m 단위로 거리를 늘려가며 검색한다', () async {
+      mockDio.mockResponse = Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {'documents': []},
+      );
+
+      await service.searchByAllCategories(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6'},
+        radius: 300,
+      );
+
+      // 3 steps (100, 200, 300) × 2 keywords = 6 calls
+      expect(mockDio.capturedQueryParams.length, 6);
+
+      final radii = mockDio.capturedQueryParams
+          .map((p) => p['radius'] as int)
+          .toSet();
+      expect(radii, {100, 200, 300});
     });
   });
 }

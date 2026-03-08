@@ -88,6 +88,9 @@
   - ListView.builder 및 const 최적화 확인 완료
   - 캐시 테스트 4건 (캐시 히트, 캐시 미스, forceRefresh, clearCache)
 
+- 식당 검색을 100m 단위 반복 검색으로 변경하여 거리별 결과 차별화
+  - searchByAllCategories가 100m~target radius까지 100m 단위로 카테고리별 병렬 검색
+  - ID 기반 중복 제거 후 거리순 정렬
 - T018: 필터 값 영속화 (앱 재시작 시 유지)
   - FilterNotifier에 _load()/_save() 추가 (SharedPreferences JSON 직렬화)
   - setDistance/toggleCategory/reset 호출 시 자동 저장

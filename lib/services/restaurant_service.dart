@@ -71,15 +71,21 @@ class RestaurantService {
     required Map<String, String> keywordToCategoryCode,
     int radius = 2000,
   }) async {
-    final results = await Future.wait(
-      keywordToCategoryCode.entries.map((entry) => searchNearbyRestaurants(
-            latitude: latitude,
-            longitude: longitude,
-            radius: radius,
-            query: entry.key,
-            categoryGroupCode: entry.value,
-          )),
-    );
+    // 100m 단위로 거리를 늘려가며 검색하여 더 많은 식당 수집
+    final futures = <Future<List<Restaurant>>>[];
+    for (int step = 100; step <= radius; step += 100) {
+      for (final entry in keywordToCategoryCode.entries) {
+        futures.add(searchNearbyRestaurants(
+          latitude: latitude,
+          longitude: longitude,
+          radius: step,
+          query: entry.key,
+          categoryGroupCode: entry.value,
+        ));
+      }
+    }
+
+    final results = await Future.wait(futures);
 
     final seen = <String>{};
     final deduplicated = <Restaurant>[];
