@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
 import 'package:lunch_roulette_app/features/filter/providers/filter_state.dart';
@@ -7,6 +8,7 @@ void main() {
   late FilterNotifier notifier;
 
   setUp(() {
+    SharedPreferences.setMockInitialValues({});
     notifier = FilterNotifier();
   });
 
@@ -61,6 +63,70 @@ void main() {
       expect(notifier.state.distance, 1000);
       expect(notifier.state.selectedCategories, isEmpty);
       expect(notifier.state.isDefault, true);
+    });
+  });
+
+  group('FilterNotifier 영속화', () {
+    test('저장된 필터 값이 있으면 로드하여 상태에 반영한다', () async {
+      SharedPreferences.setMockInitialValues({
+        'filter_state':
+            '{"distance":1500,"selectedCategories":["korean","cafe"]}',
+      });
+
+      final loaded = FilterNotifier();
+      // _load()는 비동기이므로 완료를 기다린다
+      await Future<void>.delayed(Duration.zero);
+
+      expect(loaded.state.distance, 1500);
+      expect(loaded.state.selectedCategories, {
+        FoodCategory.korean,
+        FoodCategory.cafe,
+      });
+    });
+
+    test('setDistance 호출 시 SharedPreferences에 저장된다', () async {
+      notifier.setDistance(2000);
+      await Future<void>.delayed(Duration.zero);
+
+      final prefs = await SharedPreferences.getInstance();
+      final saved = prefs.getString('filter_state');
+      expect(saved, isNotNull);
+      expect(saved, contains('"distance":2000'));
+    });
+
+    test('toggleCategory 호출 시 SharedPreferences에 저장된다', () async {
+      notifier.toggleCategory(FoodCategory.japanese);
+      await Future<void>.delayed(Duration.zero);
+
+      final prefs = await SharedPreferences.getInstance();
+      final saved = prefs.getString('filter_state');
+      expect(saved, isNotNull);
+      expect(saved, contains('"japanese"'));
+    });
+
+    test('reset 호출 시 SharedPreferences에 기본값이 저장된다', () async {
+      notifier.setDistance(2000);
+      notifier.toggleCategory(FoodCategory.korean);
+      notifier.reset();
+      await Future<void>.delayed(Duration.zero);
+
+      final prefs = await SharedPreferences.getInstance();
+      final saved = prefs.getString('filter_state');
+      expect(saved, isNotNull);
+      expect(saved, contains('"distance":1000'));
+      expect(saved, contains('"selectedCategories":[]'));
+    });
+
+    test('잘못된 카테고리 이름은 무시한다', () async {
+      SharedPreferences.setMockInitialValues({
+        'filter_state':
+            '{"distance":1000,"selectedCategories":["korean","invalid_category"]}',
+      });
+
+      final loaded = FilterNotifier();
+      await Future<void>.delayed(Duration.zero);
+
+      expect(loaded.state.selectedCategories, {FoodCategory.korean});
     });
   });
 

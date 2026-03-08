@@ -88,6 +88,11 @@
   - ListView.builder 및 const 최적화 확인 완료
   - 캐시 테스트 4건 (캐시 히트, 캐시 미스, forceRefresh, clearCache)
 
+- T018: 필터 값 영속화 (앱 재시작 시 유지)
+  - FilterNotifier에 _load()/_save() 추가 (SharedPreferences JSON 직렬화)
+  - setDistance/toggleCategory/reset 호출 시 자동 저장
+  - 앱 시작 시 저장된 distance, selectedCategories 복원
+
 ### Fixed
 - T017: 카페 카테고리(CE7) 검색 결과 0건 반환 수정
   - FoodCategory enum에 categoryGroupCode 필드 추가 (cafe→CE7, 나머지→FD6)

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
 import 'package:lunch_roulette_app/features/filter/providers/filter_state.dart';
@@ -55,6 +56,7 @@ void main() {
   late RestaurantListNotifier notifier;
 
   setUp(() {
+    SharedPreferences.setMockInitialValues({});
     mockService = MockRestaurantService();
     notifier = RestaurantListNotifier(mockService);
   });

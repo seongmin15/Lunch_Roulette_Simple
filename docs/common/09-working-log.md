@@ -35,6 +35,7 @@
 | 2026-03-08 | Ad-hoc: README/모바일 설계 문서 동기화 | 완료 | T016 및 ad-hoc 변경사항 문서 반영 |
 | 2026-03-08 | Ad-hoc: 앱 테마 블루 변경 + README 동기화 | 완료 | 오렌지→딥 블루/인디고 테마 변경, 아이콘 재생성 |
 | 2026-03-08 | T017: 카페 카테고리 검색 수정 (CE7 지원) | 완료 | FoodCategory에 categoryGroupCode 추가, 카페 CE7 코드 전달 |
+| 2026-03-08 | T018: 필터 값 영속화 | 완료 | FilterNotifier에 SharedPreferences _load/_save 추가, 테스트 5건 추가 |
 
 ---
 
@@ -210,4 +211,12 @@
 - **계획 범위**: FoodCategory에 categoryGroupCode 추가, RestaurantService 시그니처 변경, Provider 호출부 수정, 테스트 업데이트
 - **변경된 파일**: lib/features/filter/providers/filter_state.dart (categoryGroupCode 필드 추가), lib/services/restaurant_service.dart (categoryGroupCode 파라미터 + Map 시그니처), lib/features/home/providers/restaurant_list_provider.dart (keywordToCategoryCode Map 생성), test/services/restaurant_service_test.dart (+2건 CE7 테스트), test/features/home/providers/restaurant_list_provider_test.dart (mock 시그니처 업데이트), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
 - **의사결정**: searchByAllCategories의 파라미터를 List<String> keywords에서 Map<String, String> keywordToCategoryCode로 변경하여 키워드별 카테고리 코드를 매핑. 서비스 레이어에서 FoodCategory enum을 직접 참조하지 않고 Map으로 분리하여 레이어 독립성 유지.
+- **미완료/후속**: 없음
+
+### 2026-03-08 — T018: 필터 값 영속화 (앱 재시작 시 유지)
+
+- **작업**: FilterState를 SharedPreferences에 영속화하여 앱 재시작 시 필터 설정 유지
+- **계획 범위**: FilterNotifier에 _load()/_save() 추가, 각 mutation에 _save() 호출, 테스트 업데이트
+- **변경된 파일**: lib/features/filter/providers/filter_provider.dart (_load/_save 추가), test/features/filter/providers/filter_provider_test.dart (영속화 테스트 5건 추가), test/features/home/providers/restaurant_list_provider_test.dart (SharedPreferences mock 추가), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
+- **의사결정**: RouletteHistoryNotifier와 동일한 SharedPreferences 패턴 사용. JSON 포맷으로 distance(int) + selectedCategories(List<String> enum name) 저장. 알 수 없는 카테고리 이름은 무시하여 enum 변경에 대한 방어적 처리.
 - **미완료/후속**: 없음

@@ -285,3 +285,16 @@ Any active status -> Cancelled
   - [x] flutter test 전체 통과
   - [x] flutter analyze 에러 0건
 - Result: FoodCategory enum에 categoryGroupCode 필드 추가 (cafe→CE7, 나머지 7개→FD6). RestaurantService.searchNearbyRestaurants에 categoryGroupCode 파라미터 추가, searchByAllCategories를 Map<String, String> keywordToCategoryCode로 변경. RestaurantListNotifier에서 FoodCategory.values로 Map 생성. 테스트 2건 추가 (categoryGroupCode 파라미터 전달 + CE7 코드 확인), 전체 104건 통과. flutter analyze 에러 0건.
+
+### T018: 필터 값 영속화 (앱 재시작 시 유지)
+- Status: Done
+- Service: lunch-roulette-app
+- Description: FilterState(distance, selectedCategories)를 SharedPreferences에 영속화하여 앱 재시작 후에도 필터 설정이 유지되도록 한다. RouletteHistoryNotifier의 SharedPreferences 패턴을 따른다.
+- Acceptance Criteria:
+  - [x] FilterNotifier에 _load()/_save() 메서드 추가 (SharedPreferences JSON 직렬화)
+  - [x] setDistance/toggleCategory/reset 호출 시 SharedPreferences에 자동 저장
+  - [x] 앱 시작 시 저장된 필터 값 로드
+  - [x] 테스트 업데이트 (SharedPreferences mock + 영속화 테스트 추가)
+  - [x] flutter test 전체 통과
+  - [x] flutter analyze 에러 0건
+- Result: FilterNotifier에 _load()/_save() 추가 (SharedPreferences JSON 직렬화, filter_state 키). 생성자에서 _load() 호출하여 앱 시작 시 distance/selectedCategories 복원. setDistance/toggleCategory/reset에서 _save() 호출. 잘못된 카테고리 이름 무시 처리. 영속화 테스트 5건 추가 (로드, setDistance 저장, toggleCategory 저장, reset 저장, 잘못된 카테고리 무시). filteredRestaurantsProvider 테스트에 SharedPreferences mock 추가. 전체 109건 통과 (+5건). flutter analyze 에러 0건.
