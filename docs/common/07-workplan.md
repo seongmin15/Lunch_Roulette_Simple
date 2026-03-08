@@ -215,3 +215,15 @@ Any active status -> Cancelled
   - [x] 테스트 업데이트 (Provider 8건 + Screen 5건 + Filtered 4건)
   - [x] flutter analyze 에러 0건
 - Result: PriceRange 제거, FoodCategory(8개 enum값, label+keyword) 추가. FilterChip 멀티셀렉트 UI. filteredRestaurantsProvider로 categoryName.contains() 매칭 (OR 로직). 전체 97건 통과 (+5건), flutter analyze 에러 0건.
+
+### T014: 거리 필터 변경 시 식당 목록 미갱신 버그 수정
+- Status: Done
+- Service: lunch-roulette-app
+- Description: 필터 화면에서 거리를 변경해도 식당 목록이 갱신되지 않는 버그를 수정한다.
+- Acceptance Criteria:
+  - [x] 거리 필터 변경 시 식당 목록 자동 갱신
+  - [x] 위치 변경 시에도 정상적으로 식당 검색 트리거
+  - [x] 기존 92개 테스트 전체 통과
+  - [x] flutter analyze 에러 0건
+- Result: HomeScreen의 명령형 ref.listen 방식을 반응형 restaurantFetchTriggerProvider로 리팩터링. location + filter를 모두 watch하여 어느 쪽이 변경되든 자동으로 fetchRestaurants 호출. 전체 92건 통과, flutter analyze 에러 0건.
+>>>>>>> f48156b (fix: resolve distance filter not updating restaurant list (T014))

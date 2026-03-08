@@ -27,6 +27,7 @@
 | 2026-03-08 | T010: API 응답 캐싱 및 성능 최적화 | 완료 | 인메모리 캐시 10분 TTL, forceRefresh, 캐시 테스트 4건 |
 | 2026-03-08 | T011: 전체 화면 — 하단 바 겹침 수정 | 완료 | edge-to-edge 모드 + SafeArea 적용 (HomeScreen, RouletteScreen) |
 | 2026-03-08 | T012: 카테고리 필터 교체 | 완료 | PriceRange→FoodCategory, FilterChip 멀티셀렉트, filteredRestaurantsProvider |
+| 2026-03-08 | T014: 거리 필터 미갱신 버그 수정 | 완료 | ref.listen → 반응형 restaurantFetchTriggerProvider 리팩터링 |
 
 ---
 
@@ -145,4 +146,11 @@
 - **작업**: PriceRange 삭제, FoodCategory enum(8종) + FilterChip 멀티셀렉트 UI + filteredRestaurantsProvider 클라이언트 사이드 필터링
 - **변경된 파일**: lib/features/filter/providers/filter_state.dart (PriceRange→FoodCategory), lib/features/filter/providers/filter_provider.dart (toggleCategory), lib/features/filter/screens/filter_screen.dart (_CategorySelector), lib/features/home/providers/restaurant_list_provider.dart (filteredRestaurantsProvider), lib/features/home/screens/home_screen.dart (filteredRestaurantsProvider 사용), test/features/filter/ (업데이트), test/features/home/providers/restaurant_list_provider_test.dart (filtered 테스트 4건 추가)
 - **의사결정**: 카카오 API의 category_name(예: "음식점 > 한식 > 한정식")에서 키워드 contains() 매칭. 빈 카테고리 선택 = 전체 표시. 복수 선택 = OR 로직. "기타" 카테고리는 매칭이 복잡하므로 제외.
+- **미완료/후속**: T013 룰렛 결과 공유 기능
+
+### 2026-03-08 — T014: 거리 필터 변경 시 식당 목록 미갱신 버그 수정
+
+- **작업**: HomeScreen의 명령형 ref.listen 방식을 반응형 derived provider로 리팩터링
+- **변경된 파일**: lib/features/home/providers/restaurant_list_provider.dart (restaurantFetchTriggerProvider 추가), lib/features/home/screens/home_screen.dart (ref.listen 제거, ref.watch(restaurantFetchTriggerProvider) 사용), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
+- **의사결정**: ref.listen의 stale closure 문제를 근본적으로 해결하기 위해 반응형 Provider 패턴으로 전환. restaurantFetchTriggerProvider가 locationProvider + filterProvider를 모두 watch하여 어느 쪽이 변경되든 자동으로 fetch 트리거.
 - **미완료/후속**: T013 룰렛 결과 공유 기능

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
-import 'package:lunch_roulette_app/features/filter/providers/filter_state.dart';
 import 'package:lunch_roulette_app/features/home/providers/location_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/location_state.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_provider.dart';
@@ -29,29 +28,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
-
     final filter = ref.watch(filterProvider);
 
-    ref.listen<LocationState>(locationProvider, (previous, next) {
-      if (next is LocationLoaded) {
-        ref.read(restaurantListProvider.notifier).fetchRestaurants(
-              latitude: next.latitude,
-              longitude: next.longitude,
-              radius: filter.distance,
-            );
-      }
-    });
-
-    ref.listen<FilterState>(filterProvider, (previous, next) {
-      final locState = ref.read(locationProvider);
-      if (locState is LocationLoaded) {
-        ref.read(restaurantListProvider.notifier).fetchRestaurants(
-              latitude: locState.latitude,
-              longitude: locState.longitude,
-              radius: next.distance,
-            );
-      }
-    });
+    // Reactive trigger: auto-fetches when location or filter changes
+    ref.watch(restaurantFetchTriggerProvider);
 
     return Scaffold(
       appBar: AppBar(
