@@ -55,7 +55,7 @@ void main() {
 
     testWidgets('필터 변경 시 초기화 버튼이 활성화된다', (tester) async {
       await tester.pumpWidget(createTestWidget(
-        initialState: const FilterState(distance: 2000),
+        initialState: const FilterState(distance: 500),
       ));
 
       final resetButton = tester.widget<TextButton>(find.widgetWithText(TextButton, '초기화'));

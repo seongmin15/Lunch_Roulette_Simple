@@ -70,14 +70,14 @@ void main() {
     test('저장된 필터 값이 있으면 로드하여 상태에 반영한다', () async {
       SharedPreferences.setMockInitialValues({
         'filter_state':
-            '{"distance":1500,"selectedCategories":["korean","cafe"]}',
+            '{"distance":800,"selectedCategories":["korean","cafe"]}',
       });
 
       final loaded = FilterNotifier();
       // _load()는 비동기이므로 완료를 기다린다
       await Future<void>.delayed(Duration.zero);
 
-      expect(loaded.state.distance, 1500);
+      expect(loaded.state.distance, 800);
       expect(loaded.state.selectedCategories, {
         FoodCategory.korean,
         FoodCategory.cafe,
@@ -133,7 +133,7 @@ void main() {
   group('FilterState', () {
     test('copyWith으로 부분 업데이트가 가능하다', () {
       const state = FilterState(
-        distance: 1500,
+        distance: 800,
         selectedCategories: {FoodCategory.korean},
       );
       final updated = state.copyWith(distance: 2000);

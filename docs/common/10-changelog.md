@@ -96,6 +96,9 @@
   - setDistance/toggleCategory/reset 호출 시 자동 저장
   - 앱 시작 시 저장된 distance, selectedCategories 복원
 
+### Changed
+- 거리 필터 범위를 500m~3km에서 100m~1000m으로 축소, API 검색 단위를 100m에서 200m으로 변경
+
 ### Fixed
 - T019: 거리 필터 변경 시 카카오 API 재호출 안 되는 버그 수정
   - restaurantFetchTriggerProvider (Provider<void> + Future.microtask) 제거
