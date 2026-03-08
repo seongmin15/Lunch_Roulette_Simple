@@ -117,3 +117,7 @@
   - FilterChip 멀티셀렉트 UI로 카테고리 선택
   - filteredRestaurantsProvider로 categoryName 기반 클라이언트 사이드 필터링
   - OR 로직: 선택된 카테고리 중 하나라도 매칭되면 표시
+- T016: 카테고리별 15개 식당 조회 + 슬롯머신 UI
+  - RestaurantService에 query 파라미터 + searchByAllCategories() 추가 (8개 카테고리 병렬 호출, ID 중복 제거, 거리순 정렬)
+  - RestaurantListNotifier가 FoodCategory 키워드로 searchByAllCategories() 호출
+  - 원형 RouletteWheel을 SlotMachine으로 교체 (ListWheelScrollView 기반, 센터 하이라이트 바, 그라디언트 페이드)

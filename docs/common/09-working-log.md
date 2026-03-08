@@ -30,6 +30,7 @@
 | 2026-03-08 | T014: 거리 필터 미갱신 버그 수정 | 완료 | ref.listen → 반응형 restaurantFetchTriggerProvider 리팩터링 |
 | 2026-03-08 | T013: 룰렛 결과 공유 기능 | 완료 | share_plus로 결과 공유 버튼 추가 |
 | 2026-03-08 | T015: 앱 디자인 모던화 | 완료 | 그라디언트 배경, 모던 카드, 세련된 색상 팔레트 |
+| 2026-03-08 | T016: 카테고리별 15개 식당 조회 + 슬롯머신 UI | 완료 | 8개 카테고리 병렬 API 호출 + SlotMachine UI 교체 |
 
 ---
 
@@ -170,3 +171,10 @@
 - **변경된 파일**: lib/app/theme.dart (전면 리뉴얼), lib/app/router.dart (NavigationBar 스타일), lib/features/home/screens/home_screen.dart (그라디언트 배경, 버튼 스타일), lib/features/home/widgets/restaurant_list_card.dart (모던 카드), lib/features/roulette/screens/roulette_screen.dart (그라디언트 배경), lib/features/roulette/widgets/result_card.dart (그라디언트 카드), lib/features/roulette/widgets/roulette_wheel.dart (색상 팔레트), lib/features/history/screens/history_screen.dart (그라디언트 배경, 모던 리스트), lib/features/filter/screens/filter_screen.dart (그라디언트 배경, 버튼), lib/features/restaurant_detail/screens/restaurant_detail_screen.dart (그라디언트 배경, 모던 카드)
 - **의사결정**: primary color #FF6B35 (오렌지 유지하되 더 생생한 톤). appGradient(배경용 크림→베이지)와 accentGradient(CTA 버튼용 오렌지 그라디언트) 분리. Card 대신 Container+BoxDecoration으로 커스텀 그림자. withOpacity→withValues API 마이그레이션.
 - **미완료/후속**: 전체 태스크 완료 (T011~T015)
+
+### 2026-03-08 — T016: 카테고리별 15개 식당 조회 + 슬롯머신 UI
+
+- **작업**: 단일 '식당' 키워드 → 8개 카테고리 병렬 API 호출로 변경, 원형 RouletteWheel → SlotMachine UI 교체
+- **변경된 파일**: lib/services/restaurant_service.dart (query 파라미터 + searchByAllCategories), lib/features/home/providers/restaurant_list_provider.dart (searchByAllCategories 호출), lib/features/roulette/widgets/slot_machine.dart (신규), lib/features/roulette/screens/roulette_screen.dart (SlotMachine 사용), lib/features/roulette/widgets/roulette_wheel.dart (삭제), test/services/restaurant_service_test.dart (+4건), test/features/home/providers/restaurant_list_provider_test.dart (mock 업데이트)
+- **의사결정**: ListWheelScrollView.useDelegate + LoopingListDelegate로 무한 루프 슬롯머신 구현. FixedExtentScrollController.animateToItem으로 프로그래밍 방식 스핀. 서비스 레이어에서 FoodCategory import 없이 keywords: List<String>으로 분리.
+- **미완료/후속**: 없음

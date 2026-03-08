@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
+import 'package:lunch_roulette_app/features/filter/providers/filter_state.dart';
 import 'package:lunch_roulette_app/features/home/providers/location_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/location_state.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_state.dart';
@@ -94,10 +95,12 @@ class RestaurantListNotifier extends StateNotifier<RestaurantListState> {
     state = const RestaurantListLoading();
 
     try {
-      final restaurants = await _service.searchNearbyRestaurants(
+      final keywords = FoodCategory.values.map((c) => c.keyword).toList();
+      final restaurants = await _service.searchByAllCategories(
         latitude: latitude,
         longitude: longitude,
         radius: radius,
+        keywords: keywords,
       );
 
       _cache[key] = _CacheEntry(restaurants, DateTime.now());
