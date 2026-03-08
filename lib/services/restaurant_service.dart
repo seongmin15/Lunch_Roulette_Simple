@@ -71,9 +71,17 @@ class RestaurantService {
     required Map<String, String> keywordToCategoryCode,
     int radius = 2000,
   }) async {
-    // 100m 단위로 거리를 늘려가며 검색하여 더 많은 식당 수집
+    // 200m 단위로 거리를 늘려가며 검색하여 더 많은 식당 수집
+    final steps = <int>[];
+    for (int step = 200; step <= radius; step += 200) {
+      steps.add(step);
+    }
+    if (steps.isEmpty || steps.last != radius) {
+      steps.add(radius);
+    }
+
     final futures = <Future<List<Restaurant>>>[];
-    for (int step = 100; step <= radius; step += 100) {
+    for (final step in steps) {
       for (final entry in keywordToCategoryCode.entries) {
         futures.add(searchNearbyRestaurants(
           latitude: latitude,

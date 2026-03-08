@@ -89,9 +89,9 @@ class _DistanceSlider extends ConsumerWidget {
       children: [
         Slider(
           value: distance.toDouble(),
-          min: 500,
-          max: 3000,
-          divisions: 25,
+          min: 100,
+          max: 1000,
+          divisions: 9,
           label: _formatDistance(distance),
           onChanged: (value) {
             ref.read(filterProvider.notifier).setDistance(value.round());
@@ -100,14 +100,14 @@ class _DistanceSlider extends ConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('500m', style: Theme.of(context).textTheme.bodySmall),
+            Text('100m', style: Theme.of(context).textTheme.bodySmall),
             Text(
               _formatDistance(distance),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            Text('3km', style: Theme.of(context).textTheme.bodySmall),
+            Text('1km', style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ],
