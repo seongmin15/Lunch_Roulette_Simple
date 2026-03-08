@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_state.dart';
 import 'package:lunch_roulette_app/models/restaurant.dart';
 import 'package:lunch_roulette_app/services/restaurant_service.dart';
@@ -13,6 +14,23 @@ final restaurantListProvider =
     StateNotifierProvider<RestaurantListNotifier, RestaurantListState>((ref) {
   final service = ref.watch(restaurantServiceProvider);
   return RestaurantListNotifier(service);
+});
+
+final filteredRestaurantsProvider = Provider<RestaurantListState>((ref) {
+  final state = ref.watch(restaurantListProvider);
+  final filter = ref.watch(filterProvider);
+
+  if (state is! RestaurantListLoaded) return state;
+  if (filter.selectedCategories.isEmpty) return state;
+
+  final filtered = state.restaurants.where((r) {
+    return filter.selectedCategories.any(
+      (c) => r.categoryName.contains(c.keyword),
+    );
+  }).toList();
+
+  if (filtered.isEmpty) return const RestaurantListEmpty();
+  return RestaurantListLoaded(filtered);
 });
 
 class _CacheEntry {

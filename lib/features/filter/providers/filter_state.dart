@@ -1,31 +1,36 @@
-enum PriceRange {
-  all('전체'),
-  cheap('저렴'),
-  moderate('보통'),
-  expensive('비싼');
+enum FoodCategory {
+  korean('한식', '한식'),
+  chinese('중식', '중식'),
+  japanese('일식', '일식'),
+  western('양식', '양식'),
+  snack('분식', '분식'),
+  chicken('치킨', '치킨'),
+  pizza('피자', '피자'),
+  cafe('카페', '카페');
 
   final String label;
-  const PriceRange(this.label);
+  final String keyword;
+  const FoodCategory(this.label, this.keyword);
 }
 
 class FilterState {
   final int distance;
-  final PriceRange priceRange;
+  final Set<FoodCategory> selectedCategories;
 
   const FilterState({
     this.distance = 1000,
-    this.priceRange = PriceRange.all,
+    this.selectedCategories = const {},
   });
 
   FilterState copyWith({
     int? distance,
-    PriceRange? priceRange,
+    Set<FoodCategory>? selectedCategories,
   }) {
     return FilterState(
       distance: distance ?? this.distance,
-      priceRange: priceRange ?? this.priceRange,
+      selectedCategories: selectedCategories ?? this.selectedCategories,
     );
   }
 
-  bool get isDefault => distance == 1000 && priceRange == PriceRange.all;
+  bool get isDefault => distance == 1000 && selectedCategories.isEmpty;
 }

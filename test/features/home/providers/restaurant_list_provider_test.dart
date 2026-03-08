@@ -1,5 +1,8 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
+import 'package:lunch_roulette_app/features/filter/providers/filter_state.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_state.dart';
 import 'package:lunch_roulette_app/models/restaurant.dart';
@@ -192,6 +195,133 @@ void main() {
       expect(notifier.state, isA<RestaurantListLoaded>());
       final state = notifier.state as RestaurantListLoaded;
       expect(state.restaurants[0].name, '재시도 식당');
+    });
+  });
+
+  group('filteredRestaurantsProvider', () {
+    final testRestaurants = [
+      const Restaurant(
+        id: '1',
+        name: '한식당',
+        categoryName: '음식점 > 한식 > 한정식',
+        phone: '',
+        addressName: '서울시',
+        roadAddressName: '서울시 테헤란로',
+        latitude: 37.5665,
+        longitude: 126.9780,
+        distance: 100,
+        placeUrl: '',
+      ),
+      const Restaurant(
+        id: '2',
+        name: '일식당',
+        categoryName: '음식점 > 일식 > 초밥',
+        phone: '',
+        addressName: '서울시',
+        roadAddressName: '서울시 테헤란로',
+        latitude: 37.5665,
+        longitude: 126.9780,
+        distance: 200,
+        placeUrl: '',
+      ),
+      const Restaurant(
+        id: '3',
+        name: '중식당',
+        categoryName: '음식점 > 중식',
+        phone: '',
+        addressName: '서울시',
+        roadAddressName: '서울시 테헤란로',
+        latitude: 37.5665,
+        longitude: 126.9780,
+        distance: 300,
+        placeUrl: '',
+      ),
+    ];
+
+    test('카테고리 미선택 시 전체 목록을 반환한다', () {
+      final container = ProviderContainer(
+        overrides: [
+          restaurantListProvider.overrideWith((_) {
+            final notifier = RestaurantListNotifier(MockRestaurantService());
+            notifier.state = RestaurantListLoaded(testRestaurants);
+            return notifier;
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final result = container.read(filteredRestaurantsProvider);
+      expect(result, isA<RestaurantListLoaded>());
+      expect((result as RestaurantListLoaded).restaurants.length, 3);
+    });
+
+    test('한식 카테고리 선택 시 한식만 반환한다', () {
+      final container = ProviderContainer(
+        overrides: [
+          restaurantListProvider.overrideWith((_) {
+            final notifier = RestaurantListNotifier(MockRestaurantService());
+            notifier.state = RestaurantListLoaded(testRestaurants);
+            return notifier;
+          }),
+          filterProvider.overrideWith((_) {
+            final notifier = FilterNotifier();
+            notifier.toggleCategory(FoodCategory.korean);
+            return notifier;
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final result = container.read(filteredRestaurantsProvider);
+      expect(result, isA<RestaurantListLoaded>());
+      final loaded = result as RestaurantListLoaded;
+      expect(loaded.restaurants.length, 1);
+      expect(loaded.restaurants[0].name, '한식당');
+    });
+
+    test('여러 카테고리 선택 시 OR 로직으로 필터링한다', () {
+      final container = ProviderContainer(
+        overrides: [
+          restaurantListProvider.overrideWith((_) {
+            final notifier = RestaurantListNotifier(MockRestaurantService());
+            notifier.state = RestaurantListLoaded(testRestaurants);
+            return notifier;
+          }),
+          filterProvider.overrideWith((_) {
+            final notifier = FilterNotifier();
+            notifier.toggleCategory(FoodCategory.korean);
+            notifier.toggleCategory(FoodCategory.japanese);
+            return notifier;
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final result = container.read(filteredRestaurantsProvider);
+      expect(result, isA<RestaurantListLoaded>());
+      final loaded = result as RestaurantListLoaded;
+      expect(loaded.restaurants.length, 2);
+    });
+
+    test('필터 결과가 비어있으면 RestaurantListEmpty를 반환한다', () {
+      final container = ProviderContainer(
+        overrides: [
+          restaurantListProvider.overrideWith((_) {
+            final notifier = RestaurantListNotifier(MockRestaurantService());
+            notifier.state = RestaurantListLoaded(testRestaurants);
+            return notifier;
+          }),
+          filterProvider.overrideWith((_) {
+            final notifier = FilterNotifier();
+            notifier.toggleCategory(FoodCategory.pizza);
+            return notifier;
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final result = container.read(filteredRestaurantsProvider);
+      expect(result, isA<RestaurantListEmpty>());
     });
   });
 }

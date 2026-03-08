@@ -200,3 +200,18 @@ Any active status -> Cancelled
   - [x] 기존 92개 테스트 전체 통과
   - [x] flutter analyze 에러 0건
 - Result: main.dart에 SystemChrome.setEnabledSystemUIMode(edgeToEdge) + 투명 시스템 바 설정. HomeScreen/RouletteScreen 하단 버튼에 SafeArea 래핑. FilterScreen은 이미 SafeArea 적용 완료. RestaurantDetailScreen은 ListView body에 버튼이 있어 SafeArea 불필요. 전체 92건 통과, flutter analyze 에러 0건.
+
+### T012: 가격대 필터를 카테고리 필터로 교체
+- Status: Done
+- Service: lunch-roulette-app
+- Description: 카카오 API에서 가격 정보를 제공하지 않아 무의미한 가격대 필터를 제거하고, categoryName 기반 음식 카테고리 필터(한식/중식/일식/양식/분식/치킨/피자/카페)로 교체한다.
+- Acceptance Criteria:
+  - [x] PriceRange enum 제거, FoodCategory enum 추가 (8개 카테고리)
+  - [x] FilterState에 Set<FoodCategory> selectedCategories 필드 추가
+  - [x] FilterNotifier에 toggleCategory 메서드 추가
+  - [x] FilterScreen에 FilterChip 기반 카테고리 선택 UI 구현
+  - [x] filteredRestaurantsProvider 추가 (클라이언트 사이드 카테고리 필터링)
+  - [x] HomeScreen에서 filteredRestaurantsProvider 사용
+  - [x] 테스트 업데이트 (Provider 8건 + Screen 5건 + Filtered 4건)
+  - [x] flutter analyze 에러 0건
+- Result: PriceRange 제거, FoodCategory(8개 enum값, label+keyword) 추가. FilterChip 멀티셀렉트 UI. filteredRestaurantsProvider로 categoryName.contains() 매칭 (OR 로직). 전체 97건 통과 (+5건), flutter analyze 에러 0건.

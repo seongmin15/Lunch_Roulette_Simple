@@ -190,7 +190,7 @@ class _RestaurantListBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final restaurantState = ref.watch(restaurantListProvider);
+    final restaurantState = ref.watch(filteredRestaurantsProvider);
     final filter = ref.watch(filterProvider);
 
     return switch (restaurantState) {
