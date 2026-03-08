@@ -26,6 +26,7 @@
 | 2026-03-08 | T009: 네비게이션 및 전체 화면 통합 | 완료 | StatefulShellRoute 2탭 NavigationBar, 통합 테스트 6건 |
 | 2026-03-08 | T010: API 응답 캐싱 및 성능 최적화 | 완료 | 인메모리 캐시 10분 TTL, forceRefresh, 캐시 테스트 4건 |
 | 2026-03-08 | T011: 전체 화면 — 하단 바 겹침 수정 | 완료 | edge-to-edge 모드 + SafeArea 적용 (HomeScreen, RouletteScreen) |
+| 2026-03-08 | T012: 카테고리 필터 교체 | 완료 | PriceRange→FoodCategory, FilterChip 멀티셀렉트, filteredRestaurantsProvider |
 
 ---
 
@@ -138,3 +139,10 @@
 - **변경된 파일**: lib/main.dart (SystemChrome edge-to-edge 설정), lib/features/home/screens/home_screen.dart (SafeArea 래핑), lib/features/roulette/screens/roulette_screen.dart (SafeArea 래핑), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
 - **의사결정**: FilterScreen은 이미 bottomNavigationBar + SafeArea 사용 중. RestaurantDetailScreen은 ListView body 내 버튼이므로 SafeArea 불필요.
 - **미완료/후속**: T014 거리 필터 미반영 버그 수정
+
+### 2026-03-08 — T012: 가격대 필터를 카테고리 필터로 교체
+
+- **작업**: PriceRange 삭제, FoodCategory enum(8종) + FilterChip 멀티셀렉트 UI + filteredRestaurantsProvider 클라이언트 사이드 필터링
+- **변경된 파일**: lib/features/filter/providers/filter_state.dart (PriceRange→FoodCategory), lib/features/filter/providers/filter_provider.dart (toggleCategory), lib/features/filter/screens/filter_screen.dart (_CategorySelector), lib/features/home/providers/restaurant_list_provider.dart (filteredRestaurantsProvider), lib/features/home/screens/home_screen.dart (filteredRestaurantsProvider 사용), test/features/filter/ (업데이트), test/features/home/providers/restaurant_list_provider_test.dart (filtered 테스트 4건 추가)
+- **의사결정**: 카카오 API의 category_name(예: "음식점 > 한식 > 한정식")에서 키워드 contains() 매칭. 빈 카테고리 선택 = 전체 표시. 복수 선택 = OR 로직. "기타" 카테고리는 매칭이 복잡하므로 제외.
+- **미완료/후속**: T013 룰렛 결과 공유 기능

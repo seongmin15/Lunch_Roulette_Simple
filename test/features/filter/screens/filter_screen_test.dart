@@ -16,8 +16,8 @@ void main() {
             if (initialState.distance != 1000) {
               notifier.setDistance(initialState.distance);
             }
-            if (initialState.priceRange != PriceRange.all) {
-              notifier.setPriceRange(initialState.priceRange);
+            for (final category in initialState.selectedCategories) {
+              notifier.toggleCategory(category);
             }
             return notifier;
           }),
@@ -34,15 +34,15 @@ void main() {
 
       expect(find.text('필터 설정'), findsOneWidget);
       expect(find.text('검색 반경'), findsOneWidget);
-      expect(find.text('가격대'), findsOneWidget);
+      expect(find.text('음식 카테고리'), findsOneWidget);
       expect(find.text('적용'), findsOneWidget);
     });
 
-    testWidgets('가격대 선택 칩이 모두 표시된다', (tester) async {
+    testWidgets('카테고리 칩이 모두 표시된다', (tester) async {
       await tester.pumpWidget(createTestWidget());
 
-      for (final range in PriceRange.values) {
-        expect(find.text(range.label), findsOneWidget);
+      for (final category in FoodCategory.values) {
+        expect(find.text(category.label), findsOneWidget);
       }
     });
 

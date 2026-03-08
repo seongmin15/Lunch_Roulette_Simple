@@ -92,3 +92,10 @@
 - T011: 시스템 네비게이션 바와 앱 하단 버튼 겹침 수정
   - main.dart에 SystemChrome.setEnabledSystemUIMode(edgeToEdge) + 투명 시스템 바 설정
   - HomeScreen "룰렛 돌리기" 버튼, RouletteScreen 하단 버튼에 SafeArea 적용
+
+### Changed
+- T012: 가격대 필터를 음식 카테고리 필터로 교체
+  - PriceRange enum 제거, FoodCategory enum 추가 (한식/중식/일식/양식/분식/치킨/피자/카페)
+  - FilterChip 멀티셀렉트 UI로 카테고리 선택
+  - filteredRestaurantsProvider로 categoryName 기반 클라이언트 사이드 필터링
+  - OR 로직: 선택된 카테고리 중 하나라도 매칭되면 표시

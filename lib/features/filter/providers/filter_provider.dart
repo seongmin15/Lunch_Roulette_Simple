@@ -14,8 +14,14 @@ class FilterNotifier extends StateNotifier<FilterState> {
     state = state.copyWith(distance: distance);
   }
 
-  void setPriceRange(PriceRange priceRange) {
-    state = state.copyWith(priceRange: priceRange);
+  void toggleCategory(FoodCategory category) {
+    final updated = Set<FoodCategory>.from(state.selectedCategories);
+    if (updated.contains(category)) {
+      updated.remove(category);
+    } else {
+      updated.add(category);
+    }
+    state = state.copyWith(selectedCategories: updated);
   }
 
   void reset() {

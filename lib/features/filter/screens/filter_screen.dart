@@ -31,16 +31,16 @@ class FilterScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           _DistanceSlider(distance: filter.distance),
           const SizedBox(height: 24),
-          Text('가격대', style: theme.textTheme.titleMedium),
+          Text('음식 카테고리', style: theme.textTheme.titleMedium),
           const SizedBox(height: 4),
           Text(
-            '현재 카카오 API에서 가격 정보를 제공하지 않아 필터링이 제한됩니다.',
+            '원하는 카테고리를 선택하세요. 미선택 시 전체 표시됩니다.',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
-          _PriceRangeSelector(selected: filter.priceRange),
+          _CategorySelector(selectedCategories: filter.selectedCategories),
         ],
       ),
       bottomNavigationBar: SafeArea(
@@ -100,21 +100,22 @@ class _DistanceSlider extends ConsumerWidget {
   }
 }
 
-class _PriceRangeSelector extends ConsumerWidget {
-  final PriceRange selected;
+class _CategorySelector extends ConsumerWidget {
+  final Set<FoodCategory> selectedCategories;
 
-  const _PriceRangeSelector({required this.selected});
+  const _CategorySelector({required this.selectedCategories});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Wrap(
       spacing: 8,
-      children: PriceRange.values.map((range) {
-        return ChoiceChip(
-          label: Text(range.label),
-          selected: selected == range,
+      runSpacing: 4,
+      children: FoodCategory.values.map((category) {
+        return FilterChip(
+          label: Text(category.label),
+          selected: selectedCategories.contains(category),
           onSelected: (_) {
-            ref.read(filterProvider.notifier).setPriceRange(range);
+            ref.read(filterProvider.notifier).toggleCategory(category);
           },
         );
       }).toList(),
