@@ -26,6 +26,7 @@ class MockRestaurantService implements RestaurantService {
     int size = 15,
     String sort = 'distance',
     String query = '식당',
+    String categoryGroupCode = 'FD6',
   }) async {
     callCount++;
     if (mockError != null) {
@@ -38,7 +39,7 @@ class MockRestaurantService implements RestaurantService {
   Future<List<Restaurant>> searchByAllCategories({
     required double latitude,
     required double longitude,
-    required List<String> keywords,
+    required Map<String, String> keywordToCategoryCode,
     int radius = 2000,
   }) async {
     callCount++;

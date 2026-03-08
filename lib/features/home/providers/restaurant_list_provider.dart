@@ -95,12 +95,15 @@ class RestaurantListNotifier extends StateNotifier<RestaurantListState> {
     state = const RestaurantListLoading();
 
     try {
-      final keywords = FoodCategory.values.map((c) => c.keyword).toList();
+      final keywordToCategoryCode = {
+        for (final c in FoodCategory.values)
+          c.keyword: c.categoryGroupCode,
+      };
       final restaurants = await _service.searchByAllCategories(
         latitude: latitude,
         longitude: longitude,
         radius: radius,
-        keywords: keywords,
+        keywordToCategoryCode: keywordToCategoryCode,
       );
 
       _cache[key] = _CacheEntry(restaurants, DateTime.now());

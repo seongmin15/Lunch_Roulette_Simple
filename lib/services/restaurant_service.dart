@@ -16,6 +16,7 @@ class RestaurantService {
     int size = 15,
     String sort = 'distance',
     String query = '식당',
+    String categoryGroupCode = 'FD6',
   }) async {
     final apiKey = dotenv.env['KAKAO_REST_API_KEY'];
     if (apiKey == null || apiKey.isEmpty) {
@@ -30,7 +31,7 @@ class RestaurantService {
         ),
         queryParameters: {
           'query': query,
-          'category_group_code': 'FD6',
+          'category_group_code': categoryGroupCode,
           'x': longitude.toString(),
           'y': latitude.toString(),
           'radius': radius,
@@ -67,15 +68,16 @@ class RestaurantService {
   Future<List<Restaurant>> searchByAllCategories({
     required double latitude,
     required double longitude,
-    required List<String> keywords,
+    required Map<String, String> keywordToCategoryCode,
     int radius = 2000,
   }) async {
     final results = await Future.wait(
-      keywords.map((keyword) => searchNearbyRestaurants(
+      keywordToCategoryCode.entries.map((entry) => searchNearbyRestaurants(
             latitude: latitude,
             longitude: longitude,
             radius: radius,
-            query: keyword,
+            query: entry.key,
+            categoryGroupCode: entry.value,
           )),
     );
 

@@ -270,3 +270,18 @@ Any active status -> Cancelled
   - [x] 테스트 업데이트 및 전체 통과
   - [x] flutter analyze 에러 0건
 - Result: RestaurantService에 query 파라미터 + searchByAllCategories() 추가 (Future.wait 병렬 호출, ID 기반 중복 제거, 거리순 정렬). RestaurantListNotifier가 FoodCategory 8개 키워드로 searchByAllCategories() 호출. SlotMachine 위젯 (ListWheelScrollView.useDelegate + LoopingListDelegate, 센터 하이라이트 바, 상하 그라디언트 페이드). RouletteScreen에서 FixedExtentScrollController + animateToItem으로 슬롯머신 스핀. RouletteWheel 삭제. 전체 102건 통과 (+4건), flutter analyze 에러 0건.
+
+### T017: 카페 카테고리 검색 수정 (CE7 지원)
+- Status: Done
+- Service: lunch-roulette-app
+- Origin: T016
+- Description: 카카오 로컬 API에서 카페(CE7)와 음식점(FD6)이 별도 카테고리 코드로 분리되어 있어 카페 검색 시 결과가 0건 반환되는 문제 수정. FoodCategory enum에 categoryGroupCode 필드를 추가하고, RestaurantService에서 카테고리별로 적절한 코드를 전달하도록 변경.
+- Acceptance Criteria:
+  - [x] FoodCategory enum에 categoryGroupCode 필드 추가 (cafe→CE7, 나머지→FD6)
+  - [x] RestaurantService.searchNearbyRestaurants에 categoryGroupCode 파라미터 추가
+  - [x] RestaurantService.searchByAllCategories 시그니처를 Map<String, String>으로 변경
+  - [x] RestaurantListNotifier에서 keywordToCategoryCode Map 생성하여 전달
+  - [x] 테스트 업데이트 및 CE7 전달 확인 테스트 추가
+  - [x] flutter test 전체 통과
+  - [x] flutter analyze 에러 0건
+- Result: FoodCategory enum에 categoryGroupCode 필드 추가 (cafe→CE7, 나머지 7개→FD6). RestaurantService.searchNearbyRestaurants에 categoryGroupCode 파라미터 추가, searchByAllCategories를 Map<String, String> keywordToCategoryCode로 변경. RestaurantListNotifier에서 FoodCategory.values로 Map 생성. 테스트 2건 추가 (categoryGroupCode 파라미터 전달 + CE7 코드 확인), 전체 104건 통과. flutter analyze 에러 0건.

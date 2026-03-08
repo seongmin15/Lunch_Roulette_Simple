@@ -89,6 +89,10 @@
   - 캐시 테스트 4건 (캐시 히트, 캐시 미스, forceRefresh, clearCache)
 
 ### Fixed
+- T017: 카페 카테고리(CE7) 검색 결과 0건 반환 수정
+  - FoodCategory enum에 categoryGroupCode 필드 추가 (cafe→CE7, 나머지→FD6)
+  - RestaurantService.searchNearbyRestaurants에 categoryGroupCode 파라미터 추가
+  - searchByAllCategories 시그니처를 Map<String, String> keywordToCategoryCode로 변경
 - T011: 시스템 네비게이션 바와 앱 하단 버튼 겹침 수정
   - main.dart에 SystemChrome.setEnabledSystemUIMode(edgeToEdge) + 투명 시스템 바 설정
   - HomeScreen "룰렛 돌리기" 버튼, RouletteScreen 하단 버튼에 SafeArea 적용
