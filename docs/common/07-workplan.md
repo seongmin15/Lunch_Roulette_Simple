@@ -155,17 +155,17 @@ Any active status -> Cancelled
 - Result: RestaurantDetailScreen 구현 (이름, 카테고리, 도로명/지번 주소, 거리, 전화번호). 길찾기(카카오맵→Google Maps 폴백), 전화하기, 카카오맵에서 보기 버튼. 홈 화면 RestaurantListCard + 룰렛 ResultCard에서 상세 화면 네비게이션 추가. url_launcher 의존성 추가. 테스트 6건, 전체 69건 통과. flutter analyze 에러 0건.
 
 ### T008: 히스토리 화면 — 최근 10건 룰렛 결과 관리
-- Status: Ready
+- Status: Done
 - Service: lunch-roulette-app
 - Description: 최근 룰렛 결과 10건을 로컬에 저장하고, 히스토리 화면에서 조회/삭제할 수 있는 기능을 구현한다. 10건 초과 시 오래된 항목을 자동 삭제한다.
 - Acceptance Criteria:
-  - [ ] 히스토리 로컬 저장 구현 (SharedPreferences 또는 Hive)
-  - [ ] 10건 초과 시 자동 삭제 로직
-  - [ ] 히스토리 화면 위젯 구현 (HistoryListItem)
-  - [ ] 개별 히스토리 삭제 기능
-  - [ ] GoRouter에 히스토리 화면 라우트 등록
-  - [ ] 단위 테스트 + 위젯 테스트 작성
-- Result:
+  - [x] 히스토리 로컬 저장 구현 (SharedPreferences 또는 Hive)
+  - [x] 10건 초과 시 자동 삭제 로직
+  - [x] 히스토리 화면 위젯 구현 (HistoryListItem)
+  - [x] 개별 히스토리 삭제 기능
+  - [x] GoRouter에 히스토리 화면 라우트 등록
+  - [x] 단위 테스트 + 위젯 테스트 작성
+- Result: SharedPreferences 기반 히스토리 영속화 구현. Restaurant/HistoryEntry에 toJson/fromJson 추가 (Kakao API키 + 로컬 저장키 듀얼 지원). HistoryScreen: 빈 상태/목록/스와이프 삭제(Dismissible)/전체 삭제(확인 다이얼로그). 홈 AppBar에 히스토리 버튼 추가. GoRouter /history 라우트 등록. 테스트 13건 (Restaurant toJson 2건 + HistoryEntry 3건 + HistoryScreen 8건), 전체 82건 통과. flutter analyze 에러 0건.
 
 ### T009: 네비게이션 및 전체 화면 통합
 - Status: Ready

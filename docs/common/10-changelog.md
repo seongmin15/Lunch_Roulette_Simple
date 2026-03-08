@@ -66,3 +66,11 @@
   - 홈 화면 RestaurantListCard + 룰렛 ResultCard에서 상세 화면 네비게이션
   - GoRouter /restaurant-detail 라우트 추가
   - 테스트 6건
+- T008: 히스토리 화면 — 최근 10건 룰렛 결과 관리
+  - SharedPreferences 기반 히스토리 영속화 (JSON 직렬화/역직렬화)
+  - Restaurant.toJson + fromJson 듀얼 키 지원 (API 키 + 로컬 저장 키)
+  - HistoryEntry toJson/fromJson 추가
+  - HistoryScreen: 빈 상태 UI, 목록 표시, Dismissible 스와이프 삭제, 전체 삭제 확인 다이얼로그
+  - 홈 화면 AppBar에 히스토리 아이콘 버튼 추가
+  - GoRouter /history 라우트 등록
+  - 테스트 13건 (Restaurant toJson 2건 + HistoryEntry 3건 + HistoryScreen 8건)
