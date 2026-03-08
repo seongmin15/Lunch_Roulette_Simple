@@ -115,32 +115,34 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen>
             ),
             const SizedBox(height: 16),
           ],
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-            child: Row(
-              children: [
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: _isSpinning ? null : _spin,
-                    icon: Icon(_selectedRestaurant != null
-                        ? Icons.refresh
-                        : Icons.play_arrow),
-                    label: Text(
-                        _selectedRestaurant != null ? '다시 돌리기' : '돌리기'),
-                  ),
-                ),
-                if (_selectedRestaurant != null) ...[
-                  const SizedBox(width: 12),
-                  FilledButton.tonalIcon(
-                    onPressed: () => context.push(
-                      '/restaurant-detail',
-                      extra: _selectedRestaurant,
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: _isSpinning ? null : _spin,
+                      icon: Icon(_selectedRestaurant != null
+                          ? Icons.refresh
+                          : Icons.play_arrow),
+                      label: Text(
+                          _selectedRestaurant != null ? '다시 돌리기' : '돌리기'),
                     ),
-                    icon: const Icon(Icons.info_outline),
-                    label: const Text('상세'),
                   ),
+                  if (_selectedRestaurant != null) ...[
+                    const SizedBox(width: 12),
+                    FilledButton.tonalIcon(
+                      onPressed: () => context.push(
+                        '/restaurant-detail',
+                        extra: _selectedRestaurant,
+                      ),
+                      icon: const Icon(Icons.info_outline),
+                      label: const Text('상세'),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ],

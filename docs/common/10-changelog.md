@@ -87,3 +87,8 @@
   - clearCache 메서드 추가
   - ListView.builder 및 const 최적화 확인 완료
   - 캐시 테스트 4건 (캐시 히트, 캐시 미스, forceRefresh, clearCache)
+
+### Fixed
+- T011: 시스템 네비게이션 바와 앱 하단 버튼 겹침 수정
+  - main.dart에 SystemChrome.setEnabledSystemUIMode(edgeToEdge) + 투명 시스템 바 설정
+  - HomeScreen "룰렛 돌리기" 버튼, RouletteScreen 하단 버튼에 SafeArea 적용
