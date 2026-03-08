@@ -94,6 +94,10 @@
   - 앱 시작 시 저장된 distance, selectedCategories 복원
 
 ### Fixed
+- T019: 거리 필터 변경 시 카카오 API 재호출 안 되는 버그 수정
+  - restaurantFetchTriggerProvider (Provider<void> + Future.microtask) 제거
+  - restaurantListProvider에 ref.listen(locationProvider) + ref.listen(filterProvider) 콜백 추가
+  - HomeScreen에서 ref.watch(restaurantFetchTriggerProvider) 제거
 - T017: 카페 카테고리(CE7) 검색 결과 0건 반환 수정
   - FoodCategory enum에 categoryGroupCode 필드 추가 (cafe→CE7, 나머지→FD6)
   - RestaurantService.searchNearbyRestaurants에 categoryGroupCode 파라미터 추가
