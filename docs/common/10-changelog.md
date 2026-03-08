@@ -92,6 +92,9 @@
 - T011: 시스템 네비게이션 바와 앱 하단 버튼 겹침 수정
   - main.dart에 SystemChrome.setEnabledSystemUIMode(edgeToEdge) + 투명 시스템 바 설정
   - HomeScreen "룰렛 돌리기" 버튼, RouletteScreen 하단 버튼에 SafeArea 적용
+- T014: 거리 필터 변경 시 식당 목록 미갱신 버그 수정
+  - HomeScreen의 명령형 ref.listen을 반응형 restaurantFetchTriggerProvider로 리팩터링
+  - location + filter를 모두 watch하여 어느 변경이든 자동 fetch 트리거
 
 ### Changed
 - T012: 가격대 필터를 음식 카테고리 필터로 교체

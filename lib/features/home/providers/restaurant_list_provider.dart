@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
+import 'package:lunch_roulette_app/features/home/providers/location_provider.dart';
+import 'package:lunch_roulette_app/features/home/providers/location_state.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_state.dart';
 import 'package:lunch_roulette_app/models/restaurant.dart';
 import 'package:lunch_roulette_app/services/restaurant_service.dart';
@@ -31,6 +33,20 @@ final filteredRestaurantsProvider = Provider<RestaurantListState>((ref) {
 
   if (filtered.isEmpty) return const RestaurantListEmpty();
   return RestaurantListLoaded(filtered);
+});
+
+final restaurantFetchTriggerProvider = Provider<void>((ref) {
+  final location = ref.watch(locationProvider);
+  final filter = ref.watch(filterProvider);
+  if (location is LocationLoaded) {
+    Future.microtask(() {
+      ref.read(restaurantListProvider.notifier).fetchRestaurants(
+            latitude: location.latitude,
+            longitude: location.longitude,
+            radius: filter.distance,
+          );
+    });
+  }
 });
 
 class _CacheEntry {
