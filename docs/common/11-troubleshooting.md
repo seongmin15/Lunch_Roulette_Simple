@@ -14,11 +14,9 @@
      단순 오타, 1회성 실수는 기록 불필요.
      카테고리 예시: [환경] [빌드] [런타임] [데이터] [배포] [외부서비스] -->
 
-<!--
-### [카테고리] 이슈 제목
-- **증상**: 어떤 현상이 발생하는가
-- **원인**: 왜 발생하는가
-- **해결**: 어떻게 해결하는가
-- **예방**: 재발 방지를 위해 무엇을 했는가
-- **발견일**: YYYY-MM-DD
--->
+### [런타임] 거리 필터 변경 시 식당 목록 미갱신
+- **증상**: 필터 화면에서 거리를 변경하고 적용해도 홈 화면의 식당 목록이 변경된 반경으로 갱신되지 않음
+- **원인**: `Provider<void>` + `Future.microtask` 사이드이펙트 패턴이 비결정적. Riverpod의 Provider는 반환값이 변하지 않으면(void == void) 의존 위젯 재빌드를 트리거하지 않아 microtask 내 fetch가 실행되지 않을 수 있음
+- **해결**: `restaurantFetchTriggerProvider` 제거. `restaurantListProvider` 생성 함수에서 `ref.listen(filterProvider)` 콜백으로 거리 변경 감지 후 직접 `fetchRestaurants()` 호출
+- **예방**: Riverpod에서 사이드이펙트는 `Provider<void>` + `ref.watch` 대신 `ref.listen` 콜백 사용
+- **발견일**: 2026-03-08

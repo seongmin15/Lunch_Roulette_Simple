@@ -36,6 +36,7 @@
 | 2026-03-08 | Ad-hoc: 앱 테마 블루 변경 + README 동기화 | 완료 | 오렌지→딥 블루/인디고 테마 변경, 아이콘 재생성 |
 | 2026-03-08 | T017: 카페 카테고리 검색 수정 (CE7 지원) | 완료 | FoodCategory에 categoryGroupCode 추가, 카페 CE7 코드 전달 |
 | 2026-03-08 | T018: 필터 값 영속화 | 완료 | FilterNotifier에 SharedPreferences _load/_save 추가, 테스트 5건 추가 |
+| 2026-03-08 | T019: 거리 필터 API 재호출 버그 수정 | 완료 | Provider<void> 사이드이펙트 → ref.listen 콜백으로 교체 |
 
 ---
 
@@ -219,4 +220,11 @@
 - **계획 범위**: FilterNotifier에 _load()/_save() 추가, 각 mutation에 _save() 호출, 테스트 업데이트
 - **변경된 파일**: lib/features/filter/providers/filter_provider.dart (_load/_save 추가), test/features/filter/providers/filter_provider_test.dart (영속화 테스트 5건 추가), test/features/home/providers/restaurant_list_provider_test.dart (SharedPreferences mock 추가), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
 - **의사결정**: RouletteHistoryNotifier와 동일한 SharedPreferences 패턴 사용. JSON 포맷으로 distance(int) + selectedCategories(List<String> enum name) 저장. 알 수 없는 카테고리 이름은 무시하여 enum 변경에 대한 방어적 처리.
+- **미완료/후속**: 없음
+
+### 2026-03-08 — T019: 거리 필터 변경 시 API 재호출 안 되는 버그 수정
+
+- **작업**: 거리 필터 변경 시 카카오 API가 새 radius로 재호출되지 않는 버그 수정
+- **변경된 파일**: lib/features/home/providers/restaurant_list_provider.dart (restaurantFetchTriggerProvider 제거, ref.listen 추가), lib/features/home/screens/home_screen.dart (ref.watch trigger 제거), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md, docs/common/11-troubleshooting.md
+- **의사결정**: Provider<void> + Future.microtask 사이드이펙트 패턴이 비결정적 동작을 유발. Riverpod의 ref.listen 콜백으로 교체하여 filterProvider 변경 시 확정적으로 fetchRestaurants 호출. 거리 변경만 감지 (prev?.distance != next.distance)하여 카테고리 변경 시 불필요한 API 호출 방지.
 - **미완료/후속**: 없음

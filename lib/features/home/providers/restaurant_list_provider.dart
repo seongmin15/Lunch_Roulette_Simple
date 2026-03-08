@@ -16,7 +16,32 @@ final restaurantServiceProvider = Provider<RestaurantService>((ref) {
 final restaurantListProvider =
     StateNotifierProvider<RestaurantListNotifier, RestaurantListState>((ref) {
   final service = ref.watch(restaurantServiceProvider);
-  return RestaurantListNotifier(service);
+  final notifier = RestaurantListNotifier(service);
+
+  ref.listen<LocationState>(locationProvider, (_, location) {
+    if (location is LocationLoaded) {
+      final filter = ref.read(filterProvider);
+      notifier.fetchRestaurants(
+        latitude: location.latitude,
+        longitude: location.longitude,
+        radius: filter.distance,
+      );
+    }
+  });
+
+  ref.listen<FilterState>(filterProvider, (prev, next) {
+    if (prev?.distance == next.distance) return;
+    final location = ref.read(locationProvider);
+    if (location is LocationLoaded) {
+      notifier.fetchRestaurants(
+        latitude: location.latitude,
+        longitude: location.longitude,
+        radius: next.distance,
+      );
+    }
+  });
+
+  return notifier;
 });
 
 final filteredRestaurantsProvider = Provider<RestaurantListState>((ref) {
@@ -34,20 +59,6 @@ final filteredRestaurantsProvider = Provider<RestaurantListState>((ref) {
 
   if (filtered.isEmpty) return const RestaurantListEmpty();
   return RestaurantListLoaded(filtered);
-});
-
-final restaurantFetchTriggerProvider = Provider<void>((ref) {
-  final location = ref.watch(locationProvider);
-  final filter = ref.watch(filterProvider);
-  if (location is LocationLoaded) {
-    Future.microtask(() {
-      ref.read(restaurantListProvider.notifier).fetchRestaurants(
-            latitude: location.latitude,
-            longitude: location.longitude,
-            radius: filter.distance,
-          );
-    });
-  }
 });
 
 class _CacheEntry {

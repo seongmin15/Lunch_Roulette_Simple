@@ -31,9 +31,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final locationState = ref.watch(locationProvider);
     final filter = ref.watch(filterProvider);
 
-    // Reactive trigger: auto-fetches when location or filter changes
-    ref.watch(restaurantFetchTriggerProvider);
-
     return Container(
       decoration: const BoxDecoration(gradient: appGradient),
       child: Scaffold(
