@@ -21,6 +21,7 @@
 | 2026-03-08 | T004: 홈 화면 — 식당 목록 표시 UI | 완료 | 위치 획득 후 식당 목록 로딩/표시, RestaurantListCard, 상태별 UI |
 | 2026-03-08 | T005: 필터 화면 — 가격대·거리 필터 설정 | 완료 | 거리 슬라이더 + 가격대 선택 필터, 기본 거리 1000m |
 | 2026-03-08 | T006: 룰렛 화면 — 애니메이션 및 무작위 선택 | 완료 | RouletteWheel 애니메이션, 무작위 선택, ResultCard, 히스토리 저장 |
+| 2026-03-08 | T007: 식당 상세 정보 화면 | 완료 | RestaurantDetailCard, 길찾기 연동(url_launcher), GoRouter 라우트 |
 
 ---
 
@@ -94,3 +95,11 @@
 - **변경된 파일**: lib/models/history_entry.dart (신규), lib/features/roulette/providers/roulette_history_provider.dart (신규), lib/features/roulette/widgets/roulette_wheel.dart (신규), lib/features/roulette/widgets/result_card.dart (신규), lib/features/roulette/screens/roulette_screen.dart (신규), lib/features/home/screens/home_screen.dart (수정), lib/app/router.dart (수정), test/features/roulette/ (신규 3파일)
 - **의사결정**: CustomPainter로 원형 룰렛 구현 (외부 패키지 없이). easeOutCubic 감속 커브로 자연스러운 멈춤 효과. 히스토리는 인메모리 StateNotifier로 구현 (T008에서 영속화 예정). 식당 목록을 GoRouter extra로 전달.
 - **미완료/후속**: T007 식당 상세 정보 화면
+
+### 2026-03-08 — T007: 식당 상세 정보 화면
+
+- **작업**: 식당 상세 화면 구현 (상세 카드 + 길찾기/전화/카카오맵 연동), 홈·룰렛에서 네비게이션 추가
+- **계획 범위**: RestaurantDetailScreen, url_launcher 의존성, GoRouter /restaurant-detail 라우트, RestaurantListCard·RouletteScreen 네비게이션 연동, 위젯 테스트
+- **변경된 파일**: lib/features/restaurant_detail/screens/restaurant_detail_screen.dart (신규), lib/features/home/widgets/restaurant_list_card.dart (수정 — InkWell 탭), lib/features/roulette/screens/roulette_screen.dart (수정 — 상세 버튼), lib/app/router.dart (수정), pubspec.yaml (url_launcher 추가), test/features/restaurant_detail/ (신규)
+- **의사결정**: 길찾기는 카카오맵 앱 우선, 미설치 시 Google Maps 웹 폴백. url_launcher로 전화걸기/외부 URL 오픈 처리.
+- **미완료/후속**: T008 히스토리 화면 — 최근 10건 룰렛 결과 관리

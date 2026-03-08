@@ -144,15 +144,15 @@ Any active status -> Cancelled
 - Result: RouletteWheel(CustomPainter + AnimationController, easeOutCubic 감속) + ResultCard + RouletteScreen 구현. Random으로 인덱스 선택 후 해당 섹션에 멈추는 애니메이션. RouletteHistoryNotifier로 인메모리 히스토리 저장 (최대 10건). 홈 화면에 "룰렛 돌리기" 버튼 추가. 테스트 11건 (History 6건 + ResultCard 2건 + Screen 3건), 전체 63건 통과. flutter analyze 에러 0건.
 
 ### T007: 식당 상세 정보 화면
-- Status: Ready
+- Status: Done
 - Service: lunch-roulette-app
 - Description: 선택된 식당의 상세 정보(이름, 주소, 거리, 영업시간)를 표시하고, 외부 지도 앱으로 길찾기를 연동하는 화면을 구현한다.
 - Acceptance Criteria:
-  - [ ] 식당 상세 화면 위젯 구현 (RestaurantDetailCard)
-  - [ ] 길찾기 버튼 → 외부 지도 앱 연동 (url_launcher)
-  - [ ] GoRouter에 상세 화면 라우트 등록
-  - [ ] 위젯 테스트 작성
-- Result:
+  - [x] 식당 상세 화면 위젯 구현 (RestaurantDetailCard)
+  - [x] 길찾기 버튼 → 외부 지도 앱 연동 (url_launcher)
+  - [x] GoRouter에 상세 화면 라우트 등록
+  - [x] 위젯 테스트 작성
+- Result: RestaurantDetailScreen 구현 (이름, 카테고리, 도로명/지번 주소, 거리, 전화번호). 길찾기(카카오맵→Google Maps 폴백), 전화하기, 카카오맵에서 보기 버튼. 홈 화면 RestaurantListCard + 룰렛 ResultCard에서 상세 화면 네비게이션 추가. url_launcher 의존성 추가. 테스트 6건, 전체 69건 통과. flutter analyze 에러 0건.
 
 ### T008: 히스토리 화면 — 최근 10건 룰렛 결과 관리
 - Status: Ready

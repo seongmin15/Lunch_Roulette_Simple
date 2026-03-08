@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:lunch_roulette_app/features/roulette/providers/roulette_history_provider.dart';
 import 'package:lunch_roulette_app/features/roulette/widgets/result_card.dart';
@@ -105,20 +106,41 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen>
             ),
           ),
           if (_selectedRestaurant != null) ...[
-            ResultCard(restaurant: _selectedRestaurant!),
+            GestureDetector(
+              onTap: () => context.push(
+                '/restaurant-detail',
+                extra: _selectedRestaurant,
+              ),
+              child: ResultCard(restaurant: _selectedRestaurant!),
+            ),
             const SizedBox(height: 16),
           ],
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-            child: SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: _isSpinning ? null : _spin,
-                icon: Icon(_selectedRestaurant != null
-                    ? Icons.refresh
-                    : Icons.play_arrow),
-                label: Text(_selectedRestaurant != null ? '다시 돌리기' : '돌리기'),
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: _isSpinning ? null : _spin,
+                    icon: Icon(_selectedRestaurant != null
+                        ? Icons.refresh
+                        : Icons.play_arrow),
+                    label: Text(
+                        _selectedRestaurant != null ? '다시 돌리기' : '돌리기'),
+                  ),
+                ),
+                if (_selectedRestaurant != null) ...[
+                  const SizedBox(width: 12),
+                  FilledButton.tonalIcon(
+                    onPressed: () => context.push(
+                      '/restaurant-detail',
+                      extra: _selectedRestaurant,
+                    ),
+                    icon: const Icon(Icons.info_outline),
+                    label: const Text('상세'),
+                  ),
+                ],
+              ],
             ),
           ),
         ],

@@ -59,3 +59,10 @@
   - HistoryEntry 모델 + RouletteHistoryNotifier: 인메모리 히스토리 저장 (최대 10건)
   - 홈 화면에 "룰렛 돌리기" 버튼 추가, GoRouter /roulette 라우트
   - 테스트 11건 (RouletteHistory 6건 + ResultCard 2건 + RouletteScreen 3건)
+- T007: 식당 상세 정보 화면
+  - RestaurantDetailScreen: 이름, 카테고리, 주소(도로명+지번), 거리, 전화번호 표시
+  - 길찾기 버튼 (카카오맵 우선, Google Maps 폴백), 전화하기, 카카오맵에서 보기
+  - url_launcher 의존성 추가
+  - 홈 화면 RestaurantListCard + 룰렛 ResultCard에서 상세 화면 네비게이션
+  - GoRouter /restaurant-detail 라우트 추가
+  - 테스트 6건
