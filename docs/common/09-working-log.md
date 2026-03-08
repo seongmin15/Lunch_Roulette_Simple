@@ -31,6 +31,8 @@
 | 2026-03-08 | T013: 룰렛 결과 공유 기능 | 완료 | share_plus로 결과 공유 버튼 추가 |
 | 2026-03-08 | T015: 앱 디자인 모던화 | 완료 | 그라디언트 배경, 모던 카드, 세련된 색상 팔레트 |
 | 2026-03-08 | T016: 카테고리별 15개 식당 조회 + 슬롯머신 UI | 완료 | 8개 카테고리 병렬 API 호출 + SlotMachine UI 교체 |
+| 2026-03-08 | Ad-hoc: 거리 필터 100m 단위 + 앱 아이콘 | 완료 | 슬라이더 divisions 25, 커스텀 슬롯머신 아이콘 생성 |
+| 2026-03-08 | Ad-hoc: README/모바일 설계 문서 동기화 | 완료 | T016 및 ad-hoc 변경사항 문서 반영 |
 
 ---
 
@@ -177,4 +179,18 @@
 - **작업**: 단일 '식당' 키워드 → 8개 카테고리 병렬 API 호출로 변경, 원형 RouletteWheel → SlotMachine UI 교체
 - **변경된 파일**: lib/services/restaurant_service.dart (query 파라미터 + searchByAllCategories), lib/features/home/providers/restaurant_list_provider.dart (searchByAllCategories 호출), lib/features/roulette/widgets/slot_machine.dart (신규), lib/features/roulette/screens/roulette_screen.dart (SlotMachine 사용), lib/features/roulette/widgets/roulette_wheel.dart (삭제), test/services/restaurant_service_test.dart (+4건), test/features/home/providers/restaurant_list_provider_test.dart (mock 업데이트)
 - **의사결정**: ListWheelScrollView.useDelegate + LoopingListDelegate로 무한 루프 슬롯머신 구현. FixedExtentScrollController.animateToItem으로 프로그래밍 방식 스핀. 서비스 레이어에서 FoodCategory import 없이 keywords: List<String>으로 분리.
+- **미완료/후속**: 없음
+
+### 2026-03-08 — Ad-hoc: 거리 필터 100m 단위 + 앱 아이콘
+
+- **작업**: 거리 슬라이더를 500m 단위에서 100m 단위로 변경 (divisions: 5 → 25). flutter_launcher_icons로 커스텀 앱 아이콘 생성 (슬롯머신 디자인, 오렌지 테마, Android/iOS 전체 사이즈).
+- **변경된 파일**: lib/features/filter/screens/filter_screen.dart (divisions 변경), pubspec.yaml (flutter_launcher_icons 추가), assets/app_icon.png (신규 — 1024x1024 소스), android/app/src/main/res/mipmap-*/ (아이콘 교체), ios/Runner/Assets.xcassets/AppIcon.appiconset/ (아이콘 교체), docs/common/10-changelog.md
+- **의사결정**: Pillow(Python)로 슬롯머신 디자인 아이콘 프로그래밍 생성. flutter_launcher_icons로 전 플랫폼 사이즈 자동 생성.
+- **미완료/후속**: 없음
+
+### 2026-03-08 — Ad-hoc: README 및 모바일 설계 문서 동기화
+
+- **작업**: T016 변경사항 및 ad-hoc 변경사항을 README.md, 50-mobile-design.md에 반영
+- **변경된 파일**: README.md (per-category fetch, 슬롯머신, 100m 슬라이더, 102건 테스트), docs/lunch-roulette-app/50-mobile-design.md (SlotMachine 컴포넌트, CategorySelector, 카카오 API 설명)
+- **의사결정**: 없음
 - **미완료/후속**: 없음
