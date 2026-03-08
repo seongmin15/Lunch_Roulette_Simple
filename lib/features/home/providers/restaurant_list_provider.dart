@@ -23,6 +23,7 @@ class RestaurantListNotifier extends StateNotifier<RestaurantListState> {
   Future<void> fetchRestaurants({
     required double latitude,
     required double longitude,
+    int radius = 1000,
   }) async {
     state = const RestaurantListLoading();
 
@@ -30,6 +31,7 @@ class RestaurantListNotifier extends StateNotifier<RestaurantListState> {
       final restaurants = await _service.searchNearbyRestaurants(
         latitude: latitude,
         longitude: longitude,
+        radius: radius,
       );
 
       if (restaurants.isEmpty) {
@@ -45,6 +47,7 @@ class RestaurantListNotifier extends StateNotifier<RestaurantListState> {
   Future<void> retry({
     required double latitude,
     required double longitude,
+    int radius = 1000,
   }) =>
-      fetchRestaurants(latitude: latitude, longitude: longitude);
+      fetchRestaurants(latitude: latitude, longitude: longitude, radius: radius);
 }

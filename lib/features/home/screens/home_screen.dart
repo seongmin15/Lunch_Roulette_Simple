@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
+import 'package:lunch_roulette_app/features/filter/providers/filter_state.dart';
 import 'package:lunch_roulette_app/features/home/providers/location_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/location_state.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_provider.dart';
@@ -27,11 +30,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
 
+    final filter = ref.watch(filterProvider);
+
     ref.listen<LocationState>(locationProvider, (previous, next) {
       if (next is LocationLoaded) {
         ref.read(restaurantListProvider.notifier).fetchRestaurants(
               latitude: next.latitude,
               longitude: next.longitude,
+              radius: filter.distance,
+            );
+      }
+    });
+
+    ref.listen<FilterState>(filterProvider, (previous, next) {
+      final locState = ref.read(locationProvider);
+      if (locState is LocationLoaded) {
+        ref.read(restaurantListProvider.notifier).fetchRestaurants(
+              latitude: locState.latitude,
+              longitude: locState.longitude,
+              radius: next.distance,
             );
       }
     });
@@ -39,6 +56,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('점심 룰렛'),
+        actions: [
+          IconButton(
+            icon: Badge(
+              isLabelVisible: !filter.isDefault,
+              child: const Icon(Icons.tune),
+            ),
+            onPressed: () => context.push('/filter'),
+          ),
+        ],
       ),
       body: switch (locationState) {
         LocationInitial() => const Center(
@@ -165,6 +191,7 @@ class _RestaurantListBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final restaurantState = ref.watch(restaurantListProvider);
+    final filter = ref.watch(filterProvider);
 
     return switch (restaurantState) {
       RestaurantListInitial() || RestaurantListLoading() => const Center(
@@ -180,7 +207,10 @@ class _RestaurantListBody extends ConsumerWidget {
       RestaurantListLoaded(:final restaurants) => RefreshIndicator(
           onRefresh: () => ref
               .read(restaurantListProvider.notifier)
-              .fetchRestaurants(latitude: latitude, longitude: longitude),
+              .fetchRestaurants(
+                  latitude: latitude,
+                  longitude: longitude,
+                  radius: filter.distance),
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: 8),
             itemCount: restaurants.length,
@@ -204,7 +234,9 @@ class _RestaurantListBody extends ConsumerWidget {
                     ref
                         .read(restaurantListProvider.notifier)
                         .fetchRestaurants(
-                            latitude: latitude, longitude: longitude);
+                            latitude: latitude,
+                            longitude: longitude,
+                            radius: filter.distance);
                   },
                   icon: const Icon(Icons.refresh),
                   label: const Text('다시 검색'),
@@ -228,7 +260,9 @@ class _RestaurantListBody extends ConsumerWidget {
                     ref
                         .read(restaurantListProvider.notifier)
                         .fetchRestaurants(
-                            latitude: latitude, longitude: longitude);
+                            latitude: latitude,
+                            longitude: longitude,
+                            radius: filter.distance);
                   },
                   icon: const Icon(Icons.refresh),
                   label: const Text('다시 시도'),

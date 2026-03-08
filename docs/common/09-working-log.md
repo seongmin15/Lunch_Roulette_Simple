@@ -19,6 +19,7 @@
 | 2026-03-08 | T002: 위치 권한 요청 및 현재 위치 조회 | 완료 | geolocator/permission_handler로 위치 서비스 레이어 구현 |
 | 2026-03-08 | T003: 지도 API 연동 — 주변 식당 목록 조회 | 완료 | 카카오 로컬 API 기반 Restaurant 모델 + RestaurantService 구현 |
 | 2026-03-08 | T004: 홈 화면 — 식당 목록 표시 UI | 완료 | 위치 획득 후 식당 목록 로딩/표시, RestaurantListCard, 상태별 UI |
+| 2026-03-08 | T005: 필터 화면 — 가격대·거리 필터 설정 | 완료 | 거리 슬라이더 + 가격대 선택 필터, 기본 거리 1000m |
 
 ---
 
@@ -76,3 +77,11 @@
 - **변경된 파일**: lib/features/home/providers/restaurant_list_state.dart (신규), lib/features/home/providers/restaurant_list_provider.dart (신규), lib/features/home/widgets/restaurant_list_card.dart (신규), lib/features/home/screens/home_screen.dart (수정), test/features/home/providers/restaurant_list_provider_test.dart (신규), test/features/home/widgets/restaurant_list_card_test.dart (신규), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
 - **의사결정**: LocationLoaded 상태 감지 시 ref.listen으로 자동 식당 검색 트리거. _RestaurantListBody를 별도 ConsumerWidget으로 분리하여 식당 상태만 독립적으로 rebuild. RefreshIndicator로 pull-to-refresh 지원.
 - **미완료/후속**: T005 필터 화면 — 가격대·거리 필터 설정
+
+### 2026-03-08 — T005: 필터 화면 — 가격대·거리 필터 설정
+
+- **작업**: 거리 슬라이더 + 가격대 ChoiceChip 필터 화면 구현, 필터 적용 시 홈 화면 식당 목록 재검색
+- **계획 범위**: FilterState/FilterNotifier, FilterScreen (DistanceSlider + PriceRangeSelector), HomeScreen 필터 연동, GoRouter 라우트 추가, 위젯 테스트
+- **변경된 파일**: lib/features/filter/providers/filter_state.dart (신규), lib/features/filter/providers/filter_provider.dart (신규), lib/features/filter/screens/filter_screen.dart (신규), lib/features/home/screens/home_screen.dart (수정 — 필터 버튼, ref.listen 연동), lib/features/home/providers/restaurant_list_provider.dart (수정 — radius 파라미터 추가), lib/app/router.dart (수정 — /filter 라우트), test/features/filter/ (신규 테스트 2파일), docs/
+- **의사결정**: 거리 기본값 1000m (사용자 승인). 카카오 API가 가격 정보를 제공하지 않으므로 가격대 필터는 UI만 구현하고 안내 문구 표시. 필터 변경 시 ref.listen으로 감지하여 새 radius로 API 재호출. 홈 AppBar에 Badge 아이콘으로 필터 활성 상태 표시.
+- **미완료/후속**: T006 룰렛 화면 — 애니메이션 및 무작위 선택
