@@ -111,7 +111,11 @@
   - RouletteScreen에 공유 버튼 추가 (결과 선택 후 표시)
   - 공유 텍스트: [점심 룰렛 결과] + 식당명(카테고리) + 주소 + 거리 + placeUrl
 
+### Added
+- 커스텀 앱 아이콘 (슬롯머신 디자인, 오렌지 테마) — Android/iOS 전체 사이즈 생성
+
 ### Changed
+- 거리 필터 슬라이더 100m 단위로 변경 (기존 500m 단위)
 - T012: 가격대 필터를 음식 카테고리 필터로 교체
   - PriceRange enum 제거, FoodCategory enum 추가 (한식/중식/일식/양식/분식/치킨/피자/카페)
   - FilterChip 멀티셀렉트 UI로 카테고리 선택

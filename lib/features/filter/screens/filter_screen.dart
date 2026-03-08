@@ -91,7 +91,7 @@ class _DistanceSlider extends ConsumerWidget {
           value: distance.toDouble(),
           min: 500,
           max: 3000,
-          divisions: 5,
+          divisions: 25,
           label: _formatDistance(distance),
           onChanged: (value) {
             ref.read(filterProvider.notifier).setDistance(value.round());
