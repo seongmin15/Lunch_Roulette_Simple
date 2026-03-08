@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'package:lunch_roulette_app/features/roulette/providers/roulette_history_provider.dart';
 import 'package:lunch_roulette_app/features/roulette/widgets/result_card.dart';
@@ -41,6 +42,21 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen>
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _share(Restaurant restaurant) {
+    final lines = <String>[
+      '[점심 룰렛 결과]',
+      '${restaurant.name} (${restaurant.categoryName})',
+      restaurant.roadAddressName.isNotEmpty
+          ? restaurant.roadAddressName
+          : restaurant.addressName,
+      '거리: ${restaurant.distance}m',
+    ];
+    if (restaurant.placeUrl.isNotEmpty) {
+      lines.add(restaurant.placeUrl);
+    }
+    Share.share(lines.join('\n'));
   }
 
   void _spin() {
@@ -139,6 +155,12 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen>
                       ),
                       icon: const Icon(Icons.info_outline),
                       label: const Text('상세'),
+                    ),
+                    const SizedBox(width: 12),
+                    IconButton.filledTonal(
+                      onPressed: () => _share(_selectedRestaurant!),
+                      icon: const Icon(Icons.share),
+                      tooltip: '공유',
                     ),
                   ],
                 ],
