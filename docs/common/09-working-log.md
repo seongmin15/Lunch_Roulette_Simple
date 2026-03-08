@@ -33,6 +33,7 @@
 | 2026-03-08 | T016: 카테고리별 15개 식당 조회 + 슬롯머신 UI | 완료 | 8개 카테고리 병렬 API 호출 + SlotMachine UI 교체 |
 | 2026-03-08 | Ad-hoc: 거리 필터 100m 단위 + 앱 아이콘 | 완료 | 슬라이더 divisions 25, 커스텀 슬롯머신 아이콘 생성 |
 | 2026-03-08 | Ad-hoc: README/모바일 설계 문서 동기화 | 완료 | T016 및 ad-hoc 변경사항 문서 반영 |
+| 2026-03-08 | Ad-hoc: 앱 테마 블루 변경 + README 동기화 | 완료 | 오렌지→딥 블루/인디고 테마 변경, 아이콘 재생성 |
 
 ---
 
@@ -193,4 +194,11 @@
 - **작업**: T016 변경사항 및 ad-hoc 변경사항을 README.md, 50-mobile-design.md에 반영
 - **변경된 파일**: README.md (per-category fetch, 슬롯머신, 100m 슬라이더, 102건 테스트), docs/lunch-roulette-app/50-mobile-design.md (SlotMachine 컴포넌트, CategorySelector, 카카오 API 설명)
 - **의사결정**: 없음
+- **미완료/후속**: 없음
+
+### 2026-03-08 — Ad-hoc: 앱 테마 블루 변경 + README 동기화
+
+- **작업**: 앱 테마를 오렌지에서 딥 블루/인디고로 전면 변경. 앱 아이콘 재생성. README 디자인 설명 동기화.
+- **변경된 파일**: lib/app/theme.dart (primary/secondary/gradient 색상), lib/features/home/screens/home_screen.dart, lib/features/filter/screens/filter_screen.dart, lib/features/roulette/widgets/result_card.dart, lib/features/restaurant_detail/screens/restaurant_detail_screen.dart (shadow color), assets/app_icon.png (블루 재생성), Android/iOS 아이콘 전체, README.md, docs/common/10-changelog.md
+- **의사결정**: primary #3D5AF1 (딥 인디고), secondary #6B7FFF (라이트 인디고), 배경 그라디언트 #EEF0FF→#F8F6F3
 - **미완료/후속**: 없음
