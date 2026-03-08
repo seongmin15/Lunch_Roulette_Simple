@@ -8,9 +8,9 @@
 
 ## 핵심 기능
 
-- **주변 식당 자동 수집**: 앱 실행 시 현재 위치 기반으로 주변 식당 목록을 자동 표시 (30초 이내)
-- **필터링**: 거리(500m~3km) 및 음식 카테고리(한식/중식/일식/양식/분식/치킨/피자/카페) 필터
-- **룰렛 실행**: 필터링된 식당 중 하나를 무작위 선택 (5초 이내)
+- **주변 식당 자동 수집**: 8개 카테고리별 15개씩 병렬 조회 (최대 120개, 중복 제거, 거리순 정렬)
+- **필터링**: 거리(500m~3km, 100m 단위) 및 음식 카테고리(한식/중식/일식/양식/분식/치킨/피자/카페) 필터
+- **슬롯머신 룰렛**: 슬롯머신 스타일 UI로 필터링된 식당 중 하나를 무작위 선택
 - **결과 공유**: 룰렛 결과를 다른 사람에게 공유 (share_plus)
 - **히스토리**: 최근 룰렛 결과 10건 저장 및 조회
 - **식당 상세 정보**: 이름, 주소, 거리, 전화번호, 길찾기(카카오맵/Google Maps) 연동
@@ -39,8 +39,8 @@
 | 화면 | 설명 |
 |------|------|
 | Home | 식당 목록 + 필터 버튼(Badge) + 룰렛 시작 버튼 |
-| Filter | 거리 슬라이더(500m~3km) + 카테고리 FilterChip 멀티셀렉트 |
-| Roulette | 룰렛 애니메이션 + 결과 카드 + 공유/상세 버튼 |
+| Filter | 거리 슬라이더(500m~3km, 100m 단위) + 카테고리 FilterChip 멀티셀렉트 |
+| Roulette | 슬롯머신 애니메이션 + 결과 카드 + 공유/상세 버튼 |
 | Restaurant Detail | 식당 상세 정보 + 길찾기/전화/카카오맵 연동 |
 | History | 최근 10건 룰렛 결과 (스와이프 삭제, 전체 삭제) |
 
@@ -61,8 +61,8 @@ lib/
 │   │   ├── screens/          # FilterScreen (거리 + 카테고리)
 │   │   └── providers/        # FilterNotifier, FoodCategory enum
 │   ├── roulette/
-│   │   ├── screens/          # RouletteScreen (애니메이션 + 공유)
-│   │   ├── widgets/          # RouletteWheel, ResultCard
+│   │   ├── screens/          # RouletteScreen (슬롯머신 + 공유)
+│   │   ├── widgets/          # SlotMachine, ResultCard
 │   │   └── providers/        # RouletteHistoryNotifier
 │   ├── restaurant_detail/
 │   │   └── screens/          # RestaurantDetailScreen
@@ -156,7 +156,7 @@ flutter run -d "iPhone 16"
 ### 5. 테스트 실행
 
 ```bash
-# 전체 테스트 실행 (98건)
+# 전체 테스트 실행 (102건)
 flutter test
 
 # 정적 분석
