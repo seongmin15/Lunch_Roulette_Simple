@@ -7,6 +7,8 @@ import 'package:lunch_roulette_app/services/restaurant_service.dart';
 class MockDio implements Dio {
   Response? mockResponse;
   DioException? mockError;
+  final List<Map<String, dynamic>> capturedQueryParams = [];
+  final Map<String, Response> responsesByQuery = {};
 
   @override
   dynamic noSuchMethod(Invocation invocation) =>
@@ -23,6 +25,13 @@ class MockDio implements Dio {
   }) async {
     if (mockError != null) {
       throw mockError!;
+    }
+    if (queryParameters != null) {
+      capturedQueryParams.add(queryParameters);
+      final query = queryParameters['query'] as String?;
+      if (query != null && responsesByQuery.containsKey(query)) {
+        return responsesByQuery[query]! as Response<T>;
+      }
     }
     return mockResponse! as Response<T>;
   }
@@ -246,6 +255,186 @@ void main() {
       );
 
       // Custom parameters are passed without errors
+    });
+
+    test('query 파라미터를 전달할 수 있다', () async {
+      mockDio.mockResponse = Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {'documents': []},
+      );
+
+      await service.searchNearbyRestaurants(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        query: '한식',
+      );
+
+      expect(mockDio.capturedQueryParams.last['query'], '한식');
+    });
+  });
+
+  group('RestaurantService.searchByAllCategories', () {
+    test('카테고리별로 병렬 호출하고 결과를 합친다', () async {
+      mockDio.mockResponse = Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {
+          'documents': [
+            {
+              'id': '1',
+              'place_name': '식당1',
+              'category_name': '음식점',
+              'phone': '',
+              'address_name': '서울',
+              'road_address_name': '서울',
+              'y': '37.5',
+              'x': '127.0',
+              'distance': '100',
+              'place_url': '',
+            },
+          ],
+        },
+      );
+
+      final result = await service.searchByAllCategories(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        keywords: ['한식', '중식', '일식'],
+      );
+
+      // 3 calls made (one per keyword)
+      expect(mockDio.capturedQueryParams.length, 3);
+      // Same id deduplicates to 1 result
+      expect(result.length, 1);
+    });
+
+    test('중복 식당을 ID 기준으로 제거한다', () async {
+      mockDio.responsesByQuery['한식'] = Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {
+          'documents': [
+            {
+              'id': '1',
+              'place_name': '식당A',
+              'category_name': '한식',
+              'phone': '',
+              'address_name': '서울',
+              'road_address_name': '서울',
+              'y': '37.5',
+              'x': '127.0',
+              'distance': '200',
+              'place_url': '',
+            },
+            {
+              'id': '2',
+              'place_name': '식당B',
+              'category_name': '한식',
+              'phone': '',
+              'address_name': '서울',
+              'road_address_name': '서울',
+              'y': '37.5',
+              'x': '127.0',
+              'distance': '100',
+              'place_url': '',
+            },
+          ],
+        },
+      );
+      mockDio.responsesByQuery['중식'] = Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {
+          'documents': [
+            {
+              'id': '2',
+              'place_name': '식당B',
+              'category_name': '한식',
+              'phone': '',
+              'address_name': '서울',
+              'road_address_name': '서울',
+              'y': '37.5',
+              'x': '127.0',
+              'distance': '100',
+              'place_url': '',
+            },
+            {
+              'id': '3',
+              'place_name': '식당C',
+              'category_name': '중식',
+              'phone': '',
+              'address_name': '서울',
+              'road_address_name': '서울',
+              'y': '37.5',
+              'x': '127.0',
+              'distance': '300',
+              'place_url': '',
+            },
+          ],
+        },
+      );
+
+      final result = await service.searchByAllCategories(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        keywords: ['한식', '중식'],
+      );
+
+      expect(result.length, 3); // 4 total - 1 duplicate(id=2)
+      expect(result.map((r) => r.id).toList(), ['2', '1', '3']); // sorted by distance
+    });
+
+    test('결과를 거리 순으로 정렬한다', () async {
+      mockDio.responsesByQuery['한식'] = Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {
+          'documents': [
+            {
+              'id': '1',
+              'place_name': '먼 식당',
+              'category_name': '한식',
+              'phone': '',
+              'address_name': '서울',
+              'road_address_name': '서울',
+              'y': '37.5',
+              'x': '127.0',
+              'distance': '500',
+              'place_url': '',
+            },
+          ],
+        },
+      );
+      mockDio.responsesByQuery['일식'] = Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {
+          'documents': [
+            {
+              'id': '2',
+              'place_name': '가까운 식당',
+              'category_name': '일식',
+              'phone': '',
+              'address_name': '서울',
+              'road_address_name': '서울',
+              'y': '37.5',
+              'x': '127.0',
+              'distance': '100',
+              'place_url': '',
+            },
+          ],
+        },
+      );
+
+      final result = await service.searchByAllCategories(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        keywords: ['한식', '일식'],
+      );
+
+      expect(result[0].name, '가까운 식당');
+      expect(result[1].name, '먼 식당');
     });
   });
 }

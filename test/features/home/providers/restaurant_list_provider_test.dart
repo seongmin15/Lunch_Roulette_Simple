@@ -25,6 +25,21 @@ class MockRestaurantService implements RestaurantService {
     int page = 1,
     int size = 15,
     String sort = 'distance',
+    String query = '식당',
+  }) async {
+    callCount++;
+    if (mockError != null) {
+      throw mockError!;
+    }
+    return mockResult ?? [];
+  }
+
+  @override
+  Future<List<Restaurant>> searchByAllCategories({
+    required double latitude,
+    required double longitude,
+    required List<String> keywords,
+    int radius = 2000,
   }) async {
     callCount++;
     if (mockError != null) {

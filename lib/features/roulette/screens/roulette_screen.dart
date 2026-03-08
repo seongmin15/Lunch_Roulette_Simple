@@ -8,7 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:lunch_roulette_app/app/theme.dart';
 import 'package:lunch_roulette_app/features/roulette/providers/roulette_history_provider.dart';
 import 'package:lunch_roulette_app/features/roulette/widgets/result_card.dart';
-import 'package:lunch_roulette_app/features/roulette/widgets/roulette_wheel.dart';
+import 'package:lunch_roulette_app/features/roulette/widgets/slot_machine.dart';
 import 'package:lunch_roulette_app/models/restaurant.dart';
 
 class RouletteScreen extends ConsumerStatefulWidget {
@@ -20,28 +20,22 @@ class RouletteScreen extends ConsumerStatefulWidget {
   ConsumerState<RouletteScreen> createState() => _RouletteScreenState();
 }
 
-class _RouletteScreenState extends ConsumerState<RouletteScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+class _RouletteScreenState extends ConsumerState<RouletteScreen> {
+  late FixedExtentScrollController _scrollController;
   final Random _random = Random();
 
   bool _isSpinning = false;
   Restaurant? _selectedRestaurant;
-  double _currentRotation = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 3000),
-    );
+    _scrollController = FixedExtentScrollController();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -69,32 +63,19 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen>
     });
 
     final selectedIndex = _random.nextInt(widget.restaurants.length);
-    final sectionAngle = 2 * pi / widget.restaurants.length;
+    final count = widget.restaurants.length;
+    // Add multiple full loops for visual effect + land on selected index
+    final targetItem =
+        _scrollController.selectedItem + count * (3 + _random.nextInt(3)) + selectedIndex;
 
-    // Calculate target rotation: multiple full spins + land on selected section
-    // The arrow is at top (- pi/2), so we calculate the angle to align the selected section
-    final targetSectionCenter = selectedIndex * sectionAngle + sectionAngle / 2;
-    final fullSpins = (3 + _random.nextInt(3)) * 2 * pi;
-    final targetRotation = fullSpins + (2 * pi - targetSectionCenter);
-
-    _animation = Tween<double>(
-      begin: 0,
-      end: targetRotation,
-    ).animate(CurvedAnimation(
-      parent: _controller,
+    _scrollController
+        .animateToItem(
+      targetItem,
+      duration: const Duration(milliseconds: 3000),
       curve: Curves.easeOutCubic,
-    ));
-
-    final startRotation = _currentRotation;
-
-    _animation.addListener(() {
-      setState(() {
-        _currentRotation = startRotation + _animation.value;
-      });
-    });
-
-    _controller.reset();
-    _controller.forward().then((_) {
+    )
+        .then((_) {
+      if (!mounted) return;
       setState(() {
         _isSpinning = false;
         _selectedRestaurant = widget.restaurants[selectedIndex];
@@ -117,11 +98,10 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen>
         body: Column(
         children: [
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: RouletteWheel(
+            child: Center(
+              child: SlotMachine(
                 restaurants: widget.restaurants,
-                rotation: _currentRotation,
+                controller: _scrollController,
               ),
             ),
           ),

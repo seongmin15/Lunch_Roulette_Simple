@@ -256,3 +256,17 @@ Any active status -> Cancelled
   - [x] 기존 98개 테스트 전체 통과
   - [x] flutter analyze 에러 0건
 - Result: theme.dart 전면 리뉴얼 (primaryColor #FF6B35, 둥근 카드 16px, appGradient/accentGradient). 전 화면 그라디언트 배경. RestaurantListCard에 아이콘+거리 뱃지. ResultCard 그라디언트 카드. HistoryListItem 모던 카드. NavigationBar 반투명+그림자. 주요 CTA 버튼 accentGradient. withOpacity→withValues 22건 마이그레이션. 전체 98건 통과, flutter analyze 0건.
+
+### T016: 카테고리별 15개 식당 조회 + 슬롯머신 UI
+- Status: Done
+- Service: lunch-roulette-app
+- Description: 단일 '식당' 키워드로 15개만 가져오던 API 호출을 8개 카테고리별 15개씩 병렬 호출 (최대 120개, 중복 제거)로 변경하고, 원형 룰렛 휠을 슬롯머신 스타일 UI로 교체한다.
+- Acceptance Criteria:
+  - [x] RestaurantService에 query 파라미터 추가 및 searchByAllCategories() 메서드 구현
+  - [x] RestaurantListNotifier에서 searchByAllCategories() 호출로 변경
+  - [x] SlotMachine 위젯 구현 (ListWheelScrollView 기반)
+  - [x] RouletteScreen에서 RouletteWheel을 SlotMachine으로 교체
+  - [x] RouletteWheel 파일 삭제
+  - [x] 테스트 업데이트 및 전체 통과
+  - [x] flutter analyze 에러 0건
+- Result: RestaurantService에 query 파라미터 + searchByAllCategories() 추가 (Future.wait 병렬 호출, ID 기반 중복 제거, 거리순 정렬). RestaurantListNotifier가 FoodCategory 8개 키워드로 searchByAllCategories() 호출. SlotMachine 위젯 (ListWheelScrollView.useDelegate + LoopingListDelegate, 센터 하이라이트 바, 상하 그라디언트 페이드). RouletteScreen에서 FixedExtentScrollController + animateToItem으로 슬롯머신 스핀. RouletteWheel 삭제. 전체 102건 통과 (+4건), flutter analyze 에러 0건.

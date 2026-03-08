@@ -15,6 +15,7 @@ class RestaurantService {
     int page = 1,
     int size = 15,
     String sort = 'distance',
+    String query = '식당',
   }) async {
     final apiKey = dotenv.env['KAKAO_REST_API_KEY'];
     if (apiKey == null || apiKey.isEmpty) {
@@ -28,7 +29,7 @@ class RestaurantService {
           headers: {'Authorization': 'KakaoAK $apiKey'},
         ),
         queryParameters: {
-          'query': '식당',
+          'query': query,
           'category_group_code': 'FD6',
           'x': longitude.toString(),
           'y': latitude.toString(),
@@ -61,5 +62,34 @@ class RestaurantService {
           throw Exception('식당 검색 중 오류가 발생했습니다.');
       }
     }
+  }
+
+  Future<List<Restaurant>> searchByAllCategories({
+    required double latitude,
+    required double longitude,
+    required List<String> keywords,
+    int radius = 2000,
+  }) async {
+    final results = await Future.wait(
+      keywords.map((keyword) => searchNearbyRestaurants(
+            latitude: latitude,
+            longitude: longitude,
+            radius: radius,
+            query: keyword,
+          )),
+    );
+
+    final seen = <String>{};
+    final deduplicated = <Restaurant>[];
+    for (final list in results) {
+      for (final restaurant in list) {
+        if (seen.add(restaurant.id)) {
+          deduplicated.add(restaurant);
+        }
+      }
+    }
+
+    deduplicated.sort((a, b) => a.distance.compareTo(b.distance));
+    return deduplicated;
   }
 }
