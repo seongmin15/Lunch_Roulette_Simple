@@ -238,3 +238,21 @@ Any active status -> Cancelled
   - [x] 공유 버튼 표시 테스트 추가
   - [x] flutter analyze 에러 0건
 - Result: share_plus ^10.1.4 추가. RouletteScreen에 IconButton.filledTonal 공유 버튼 추가 (결과 선택 후 표시). 공유 텍스트: [점심 룰렛 결과] + 식당명(카테고리) + 주소 + 거리 + placeUrl. 테스트 1건 추가, 전체 98건 통과. flutter analyze 에러 0건.
+
+### T015: 앱 디자인 모던화 (미니멀 + 그라디언트)
+- Status: Done
+- Service: lunch-roulette-app
+- Description: 기본 Material 3 디자인을 모던하고 미니멀한 스타일로 리뉴얼한다. 그라디언트 배경, 부드러운 카드, 세련된 색상 팔레트를 적용한다.
+- Acceptance Criteria:
+  - [x] theme.dart 리뉴얼 (커스텀 색상, 둥근 카드, 그라디언트 정의)
+  - [x] 전체 화면에 그라디언트 배경 적용 (Home, Roulette, History, Filter, Detail)
+  - [x] RestaurantListCard 모던 카드 스타일 (아이콘, 그림자, 뱃지)
+  - [x] ResultCard 그라디언트 카드 스타일
+  - [x] HistoryListItem 모던 카드 스타일
+  - [x] NavigationBar 세련된 스타일 (반투명, 그림자)
+  - [x] 주요 버튼 그라디언트 스타일 적용
+  - [x] RouletteWheel 색상 팔레트 업데이트
+  - [x] withOpacity → withValues 마이그레이션 (22건)
+  - [x] 기존 98개 테스트 전체 통과
+  - [x] flutter analyze 에러 0건
+- Result: theme.dart 전면 리뉴얼 (primaryColor #FF6B35, 둥근 카드 16px, appGradient/accentGradient). 전 화면 그라디언트 배경. RestaurantListCard에 아이콘+거리 뱃지. ResultCard 그라디언트 카드. HistoryListItem 모던 카드. NavigationBar 반투명+그림자. 주요 CTA 버튼 accentGradient. withOpacity→withValues 22건 마이그레이션. 전체 98건 통과, flutter analyze 0건.

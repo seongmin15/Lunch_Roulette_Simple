@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'package:lunch_roulette_app/app/theme.dart';
 import 'package:lunch_roulette_app/features/roulette/providers/roulette_history_provider.dart';
 import 'package:lunch_roulette_app/features/roulette/widgets/result_card.dart';
 import 'package:lunch_roulette_app/features/roulette/widgets/roulette_wheel.dart';
@@ -106,11 +107,14 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('룰렛'),
-      ),
-      body: Column(
+    return Container(
+      decoration: const BoxDecoration(gradient: appGradient),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('룰렛'),
+        ),
+        body: Column(
         children: [
           Expanded(
             child: Padding(
@@ -168,6 +172,7 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen>
             ),
           ),
         ],
+      ),
       ),
     );
   }

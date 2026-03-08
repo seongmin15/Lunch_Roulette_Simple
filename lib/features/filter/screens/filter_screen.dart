@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:lunch_roulette_app/app/theme.dart';
 import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
 import 'package:lunch_roulette_app/features/filter/providers/filter_state.dart';
 
@@ -12,19 +13,22 @@ class FilterScreen extends ConsumerWidget {
     final filter = ref.watch(filterProvider);
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('필터 설정'),
-        actions: [
-          TextButton(
-            onPressed: filter.isDefault
-                ? null
-                : () => ref.read(filterProvider.notifier).reset(),
-            child: const Text('초기화'),
-          ),
-        ],
-      ),
-      body: ListView(
+    return Container(
+      decoration: const BoxDecoration(gradient: appGradient),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('필터 설정'),
+          actions: [
+            TextButton(
+              onPressed: filter.isDefault
+                  ? null
+                  : () => ref.read(filterProvider.notifier).reset(),
+              child: const Text('초기화'),
+            ),
+          ],
+        ),
+        body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text('검색 반경', style: theme.textTheme.titleMedium),
@@ -43,12 +47,30 @@ class FilterScreen extends ConsumerWidget {
           _CategorySelector(selectedCategories: filter.selectedCategories),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: FilledButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('적용'),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: accentGradient,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFF6B35).withValues(alpha:0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: FilledButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                ),
+                child: const Text('적용'),
+              ),
+            ),
           ),
         ),
       ),

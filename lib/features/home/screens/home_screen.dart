@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:lunch_roulette_app/app/theme.dart';
 import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/location_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/location_state.dart';
@@ -33,20 +34,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Reactive trigger: auto-fetches when location or filter changes
     ref.watch(restaurantFetchTriggerProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('점심 룰렛'),
-        actions: [
-          IconButton(
-            icon: Badge(
-              isLabelVisible: !filter.isDefault,
-              child: const Icon(Icons.tune),
+    return Container(
+      decoration: const BoxDecoration(gradient: appGradient),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('점심 룰렛'),
+          actions: [
+            IconButton(
+              icon: Badge(
+                isLabelVisible: !filter.isDefault,
+                child: const Icon(Icons.tune),
+              ),
+              onPressed: () => context.push('/filter'),
             ),
-            onPressed: () => context.push('/filter'),
-          ),
-        ],
-      ),
-      body: switch (locationState) {
+          ],
+        ),
+        body: switch (locationState) {
         LocationInitial() => const Center(
             child: Text('점심 룰렛 앱에 오신 것을 환영합니다!'),
           ),
@@ -155,6 +159,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
       },
+      ),
     );
   }
 }
@@ -208,11 +213,28 @@ class _RestaurantListBody extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: SizedBox(
                   width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: () =>
-                        context.push('/roulette', extra: restaurants),
-                    icon: const Icon(Icons.casino),
-                    label: Text('룰렛 돌리기 (${restaurants.length}곳)'),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: accentGradient,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFF6B35).withValues(alpha:0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: FilledButton.icon(
+                      onPressed: () =>
+                          context.push('/roulette', extra: restaurants),
+                      icon: const Icon(Icons.casino),
+                      label: Text('룰렛 돌리기 (${restaurants.length}곳)'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -98,6 +98,15 @@
 
 ### Added
 - T013: 룰렛 결과 공유 기능
+- T015: 앱 디자인 모던화 (미니멀 + 그라디언트)
+  - theme.dart 전면 리뉴얼 (primaryColor #FF6B35, 둥근 카드, appGradient/accentGradient)
+  - 전체 화면 그라디언트 배경 적용 (Home, Roulette, History, Filter, Detail)
+  - RestaurantListCard/HistoryListItem 모던 카드 스타일 (아이콘, 둥근 모서리, 부드러운 그림자)
+  - ResultCard 오렌지 그라디언트 카드
+  - NavigationBar 반투명 배경 + 그림자
+  - CTA 버튼 accentGradient 적용
+  - RouletteWheel 색상 팔레트 업데이트
+  - withOpacity → withValues 마이그레이션 (22건)
   - share_plus ^10.1.4 의존성 추가
   - RouletteScreen에 공유 버튼 추가 (결과 선택 후 표시)
   - 공유 텍스트: [점심 룰렛 결과] + 식당명(카테고리) + 주소 + 거리 + placeUrl
