@@ -19,7 +19,7 @@ class ResultCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFF6B35).withValues(alpha:0.3),
+            color: const Color(0xFF3D5AF1).withValues(alpha:0.3),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),

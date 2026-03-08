@@ -219,7 +219,7 @@ class _RestaurantListBody extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFFF6B35).withValues(alpha:0.3),
+                          color: const Color(0xFF3D5AF1).withValues(alpha:0.3),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),

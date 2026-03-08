@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 // Modern color palette
-const _primaryColor = Color(0xFFFF6B35);
-const _secondaryColor = Color(0xFFFF8F61);
+const _primaryColor = Color(0xFF3D5AF1);
+const _secondaryColor = Color(0xFF6B7FFF);
 
 final ThemeData appTheme = ThemeData(
   useMaterial3: true,
@@ -78,7 +78,7 @@ const appGradient = LinearGradient(
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
   colors: [
-    Color(0xFFFFF5EE),
+    Color(0xFFEEF0FF),
     Color(0xFFF8F6F3),
   ],
 );
@@ -88,7 +88,7 @@ const accentGradient = LinearGradient(
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
   colors: [
-    Color(0xFFFF6B35),
-    Color(0xFFFF8F61),
+    Color(0xFF3D5AF1),
+    Color(0xFF6B7FFF),
   ],
 );
