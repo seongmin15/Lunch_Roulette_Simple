@@ -17,6 +17,7 @@
 | 2026-03-08 | 프로젝트 Init | 완료 | Git 초기화, README/.gitignore 생성, remote 설정, 초기 태스크 작성 |
 | 2026-03-08 | T001: Flutter 프로젝트 초기 생성 | 완료 | Flutter 3.41.4 프로젝트 생성, feature-first 구조, 핵심 의존성, 부트스트랩 코드 |
 | 2026-03-08 | T002: 위치 권한 요청 및 현재 위치 조회 | 완료 | geolocator/permission_handler로 위치 서비스 레이어 구현 |
+| 2026-03-08 | T003: 지도 API 연동 — 주변 식당 목록 조회 | 완료 | 카카오 로컬 API 기반 Restaurant 모델 + RestaurantService 구현 |
 
 ---
 
@@ -58,3 +59,11 @@
 - **변경된 파일**: pubspec.yaml, android/app/src/main/AndroidManifest.xml, ios/Runner/Info.plist, lib/services/location_service.dart (신규), lib/features/home/providers/location_state.dart (신규), lib/features/home/providers/location_provider.dart (신규), lib/features/home/screens/home_screen.dart, test/services/location_service_test.dart (신규), test/features/home/providers/location_provider_test.dart (신규), test/widget_test.dart
 - **의사결정**: permission_handler를 aliased import로 사용하여 openAppSettings 이름 충돌 해결. MockLocationService를 직접 구현하여 mockito 코드 생성 없이 테스트 가능하게 함.
 - **미완료/후속**: T003 지도 API 연동 — 주변 식당 목록 조회
+
+### 2026-03-08 — T003: 지도 API 연동 — 주변 식당 목록 조회 (카카오 로컬 API)
+
+- **작업**: 카카오 로컬 API를 사용하여 주변 식당 검색 서비스 레이어 구현
+- **계획 범위**: Restaurant 데이터 모델, RestaurantService(Dio 기반), .env.example 업데이트, ADR-4 기록, 단위 테스트
+- **변경된 파일**: lib/models/restaurant.dart (신규), lib/services/restaurant_service.dart (신규), test/models/restaurant_test.dart (신규), test/services/restaurant_service_test.dart (신규), .env.example (KAKAO_REST_API_KEY 추가), docs/common/02-architecture-decisions.md (ADR-4 추가), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
+- **의사결정**: 카카오 로컬 API 선택 (ADR-4). 카카오 API가 가격대/영업시간 필드를 직접 제공하지 않으므로 Restaurant 모델에 categoryName, phone, placeUrl로 대체. MockDio는 `implements Dio` + `noSuchMethod` 패턴으로 Dio 5.x 호환성 확보.
+- **미완료/후속**: T004 홈 화면 — 식당 목록 표시 UI
