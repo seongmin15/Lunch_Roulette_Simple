@@ -70,23 +70,17 @@ class RestaurantService {
     required double longitude,
     required Map<String, String> keywordToCategoryCode,
     int radius = 2000,
+    int pages = 5,
   }) async {
-    // 200m 단위로 거리를 늘려가며 검색하여 더 많은 식당 수집
-    final steps = <int>[];
-    for (int step = 200; step <= radius; step += 200) {
-      steps.add(step);
-    }
-    if (steps.isEmpty || steps.last != radius) {
-      steps.add(radius);
-    }
-
+    // 카테고리별로 여러 페이지를 병렬 호출하여 더 많은 식당 수집
     final futures = <Future<List<Restaurant>>>[];
-    for (final step in steps) {
-      for (final entry in keywordToCategoryCode.entries) {
+    for (final entry in keywordToCategoryCode.entries) {
+      for (int page = 1; page <= pages; page++) {
         futures.add(searchNearbyRestaurants(
           latitude: latitude,
           longitude: longitude,
-          radius: step,
+          radius: radius,
+          page: page,
           query: entry.key,
           categoryGroupCode: entry.value,
         ));

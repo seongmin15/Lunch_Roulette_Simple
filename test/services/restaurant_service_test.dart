@@ -317,10 +317,10 @@ void main() {
         latitude: 37.5665,
         longitude: 126.9780,
         keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6', '일식': 'FD6'},
-        radius: 100,
+        pages: 1,
       );
 
-      // 1 step(100m) × 3 keywords = 3 calls
+      // 3 keywords × 1 page = 3 calls
       expect(mockDio.capturedQueryParams.length, 3);
       // Same id deduplicates to 1 result
       expect(result.length, 1);
@@ -396,7 +396,7 @@ void main() {
         latitude: 37.5665,
         longitude: 126.9780,
         keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6'},
-        radius: 100,
+        pages: 1,
       );
 
       expect(result.length, 3); // 4 total - 1 duplicate(id=2)
@@ -449,7 +449,7 @@ void main() {
         latitude: 37.5665,
         longitude: 126.9780,
         keywordToCategoryCode: {'한식': 'FD6', '일식': 'FD6'},
-        radius: 100,
+        pages: 1,
       );
 
       expect(result[0].name, '가까운 식당');
@@ -482,7 +482,7 @@ void main() {
         latitude: 37.5665,
         longitude: 126.9780,
         keywordToCategoryCode: {'한식': 'FD6', '카페': 'CE7'},
-        radius: 100,
+        pages: 1,
       );
 
       // Verify category_group_code per keyword
@@ -497,7 +497,7 @@ void main() {
       expect(koreanCall['category_group_code'], 'FD6');
     });
 
-    test('200m 단위로 거리를 늘려가며 검색한다', () async {
+    test('카테고리별로 여러 페이지를 병렬 호출한다', () async {
       mockDio.mockResponse = Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 200,
@@ -508,39 +508,16 @@ void main() {
         latitude: 37.5665,
         longitude: 126.9780,
         keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6'},
-        radius: 600,
+        pages: 3,
       );
 
-      // 3 steps (200, 400, 600) × 2 keywords = 6 calls
+      // 2 keywords × 3 pages = 6 calls
       expect(mockDio.capturedQueryParams.length, 6);
 
-      final radii = mockDio.capturedQueryParams
-          .map((p) => p['radius'] as int)
+      final pageNumbers = mockDio.capturedQueryParams
+          .map((p) => p['page'] as int)
           .toSet();
-      expect(radii, {200, 400, 600});
-    });
-
-    test('radius가 200의 배수가 아니면 정확한 radius도 포함한다', () async {
-      mockDio.mockResponse = Response(
-        requestOptions: RequestOptions(path: ''),
-        statusCode: 200,
-        data: {'documents': []},
-      );
-
-      await service.searchByAllCategories(
-        latitude: 37.5665,
-        longitude: 126.9780,
-        keywordToCategoryCode: {'한식': 'FD6'},
-        radius: 300,
-      );
-
-      // steps: 200, 300 → 2 steps × 1 keyword = 2 calls
-      expect(mockDio.capturedQueryParams.length, 2);
-
-      final radii = mockDio.capturedQueryParams
-          .map((p) => p['radius'] as int)
-          .toSet();
-      expect(radii, {200, 300});
+      expect(pageNumbers, {1, 2, 3});
     });
   });
 }

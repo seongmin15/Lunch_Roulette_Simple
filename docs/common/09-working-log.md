@@ -37,6 +37,7 @@
 | 2026-03-08 | T017: 카페 카테고리 검색 수정 (CE7 지원) | 완료 | FoodCategory에 categoryGroupCode 추가, 카페 CE7 코드 전달 |
 | 2026-03-08 | T018: 필터 값 영속화 | 완료 | FilterNotifier에 SharedPreferences _load/_save 추가, 테스트 5건 추가 |
 | 2026-03-08 | T019: 거리 필터 API 재호출 버그 수정 | 완료 | Provider<void> 사이드이펙트 → ref.listen 콜백으로 교체 |
+| 2026-03-08 | Ad-hoc: 식당 검색 페이지네이션 전환 | 완료 | radius-stepping → 페이지네이션으로 변경하여 중복 결과 문제 해결 |
 
 ---
 
@@ -227,4 +228,11 @@
 - **작업**: 거리 필터 변경 시 카카오 API가 새 radius로 재호출되지 않는 버그 수정
 - **변경된 파일**: lib/features/home/providers/restaurant_list_provider.dart (restaurantFetchTriggerProvider 제거, ref.listen 추가), lib/features/home/screens/home_screen.dart (ref.watch trigger 제거), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md, docs/common/11-troubleshooting.md
 - **의사결정**: Provider<void> + Future.microtask 사이드이펙트 패턴이 비결정적 동작을 유발. Riverpod의 ref.listen 콜백으로 교체하여 filterProvider 변경 시 확정적으로 fetchRestaurants 호출. 거리 변경만 감지 (prev?.distance != next.distance)하여 카테고리 변경 시 불필요한 API 호출 방지.
+- **미완료/후속**: 없음
+
+### 2026-03-08 — Ad-hoc: 식당 검색 페이지네이션 전환
+
+- **작업**: radius-stepping 방식(100m~target까지 100m 단위 반복)이 동일한 가까운 식당만 중복 반환하는 문제를 페이지네이션 방식으로 교체
+- **변경된 파일**: lib/services/restaurant_service.dart (searchByAllCategories: radius-step 루프 → pages 파라미터 페이지 루프), test/services/restaurant_service_test.dart (radius:100 → pages:1, 페이지네이션 테스트 추가), test/features/home/providers/restaurant_list_provider_test.dart (MockRestaurantService에 pages 파라미터 추가), docs/common/09-working-log.md, docs/common/10-changelog.md
+- **의사결정**: 카카오 API는 radius 내에서 항상 거리순 상위 15개를 반환하므로, 200m/400m/600m 식 반복은 같은 결과만 중복. target radius에서 page 1,2,3,...을 병렬 호출하면 실제 다른 식당을 수집 가능. 기본 pages=5 → 카테고리당 최대 75개 식당.
 - **미완료/후속**: 없음
