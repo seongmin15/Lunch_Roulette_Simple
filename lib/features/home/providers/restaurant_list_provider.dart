@@ -127,12 +127,11 @@ class RestaurantListNotifier extends StateNotifier<RestaurantListState> {
     state = const RestaurantListLoading();
 
     try {
-      final restaurants = await _service.searchAllByCategory(
+      final restaurants = await _service.searchByCategoryGrid(
         latitude: latitude,
         longitude: longitude,
         radius: 1000,
         categoryGroupCode: placeType.categoryGroupCode,
-        query: placeType.query,
       );
 
       _cache[key] = _CacheEntry(restaurants, DateTime.now());

@@ -39,6 +39,7 @@
 | 2026-03-08 | T019: 거리 필터 API 재호출 버그 수정 | 완료 | Provider<void> 사이드이펙트 → ref.listen 콜백으로 교체 |
 | 2026-03-08 | Ad-hoc: 식당 검색 페이지네이션 전환 | 완료 | radius-stepping → 페이지네이션으로 변경하여 중복 결과 문제 해결 |
 | 2026-03-08 | T020: 식당/카페 선택 + 1km 전체 fetch + 클라이언트 필터링 | 완료 | PlaceType 토글 추가, 자동 페이지네이션, API 호출 40→2~7회 절감, 클라이언트 사이드 거리/카테고리 필터링 |
+| 2026-03-08 | T021: Category Search API + 2×2 Grid로 45건 제한 우회 | 완료 | keyword→category search 전환, 2×2 rect grid 분할, Haversine 거리 계산, 최대 180곳 수집 |
 
 ---
 
@@ -236,6 +237,14 @@
 - **작업**: radius-stepping 방식(100m~target까지 100m 단위 반복)이 동일한 가까운 식당만 중복 반환하는 문제를 페이지네이션 방식으로 교체
 - **변경된 파일**: lib/services/restaurant_service.dart (searchByAllCategories: radius-step 루프 → pages 파라미터 페이지 루프), test/services/restaurant_service_test.dart (radius:100 → pages:1, 페이지네이션 테스트 추가), test/features/home/providers/restaurant_list_provider_test.dart (MockRestaurantService에 pages 파라미터 추가), docs/common/09-working-log.md, docs/common/10-changelog.md
 - **의사결정**: 카카오 API는 radius 내에서 항상 거리순 상위 15개를 반환하므로, 200m/400m/600m 식 반복은 같은 결과만 중복. target radius에서 page 1,2,3,...을 병렬 호출하면 실제 다른 식당을 수집 가능. 기본 pages=5 → 카테고리당 최대 75개 식당.
+- **미완료/후속**: 없음
+
+### 2026-03-08 — T021: Category Search API + 2×2 Grid로 45건 제한 우회
+
+- **작업**: 카카오 API pageable_count 45건 상한을 우회하기 위해 keyword search → category search API로 전환, 2×2 rect grid 분할로 최대 180곳 수집, Haversine 공식으로 클라이언트 사이드 거리 계산
+- **계획 범위**: GeoUtils 유틸리티, Restaurant.copyWith, RestaurantService.searchByCategoryGrid, RestaurantListNotifier 호출 전환, 테스트 추가
+- **변경된 파일**: lib/shared/utils/geo_utils.dart (신규), lib/models/restaurant.dart (copyWith 추가), lib/services/restaurant_service.dart (searchByCategoryGrid, _categorySearchRaw, _paginateCell, _handleDioError 추가), lib/features/home/providers/restaurant_list_provider.dart (searchByCategoryGrid 호출), test/shared/utils/geo_utils_test.dart (신규 9건), test/models/restaurant_test.dart (copyWith 3건 추가), test/services/restaurant_service_test.dart (searchByCategoryGrid 8건 추가, MockDio rect 지원), test/features/home/providers/restaurant_list_provider_test.dart (mock 업데이트), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md, docs/lunch-roulette-app/50-mobile-design.md
+- **의사결정**: category search API의 rect 파라미터 사용 시 distance 필드가 반환되지 않으므로 Haversine 공식으로 클라이언트 사이드 거리 계산. 셀당 최대 3페이지 cap (45건)으로 API 호출 제한. 기존 searchAllByCategory/searchNearbyRestaurants는 호환성 유지.
 - **미완료/후속**: 없음
 
 ### 2026-03-08 — T020: 식당/카페 선택 + 1km 전체 fetch + 클라이언트 필터링

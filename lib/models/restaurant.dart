@@ -53,6 +53,32 @@ class Restaurant {
     };
   }
 
+  Restaurant copyWith({
+    String? id,
+    String? name,
+    String? categoryName,
+    String? phone,
+    String? addressName,
+    String? roadAddressName,
+    double? latitude,
+    double? longitude,
+    int? distance,
+    String? placeUrl,
+  }) {
+    return Restaurant(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      categoryName: categoryName ?? this.categoryName,
+      phone: phone ?? this.phone,
+      addressName: addressName ?? this.addressName,
+      roadAddressName: roadAddressName ?? this.roadAddressName,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      distance: distance ?? this.distance,
+      placeUrl: placeUrl ?? this.placeUrl,
+    );
+  }
+
   static double _parseDouble(dynamic value) {
     if (value == null) return 0.0;
     if (value is double) return value;

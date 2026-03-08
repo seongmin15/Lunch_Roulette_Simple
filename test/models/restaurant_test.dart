@@ -93,6 +93,91 @@ void main() {
     });
   });
 
+  group('Restaurant.copyWith', () {
+    test('distance만 변경하고 나머지는 유지한다', () {
+      const original = Restaurant(
+        id: '1',
+        name: '식당',
+        categoryName: '음식점 > 한식',
+        phone: '02-1234-5678',
+        addressName: '서울시 강남구',
+        roadAddressName: '서울시 강남구 테헤란로',
+        latitude: 37.5665,
+        longitude: 126.978,
+        distance: 0,
+        placeUrl: 'https://place.map.kakao.com/1',
+      );
+
+      final updated = original.copyWith(distance: 500);
+
+      expect(updated.distance, 500);
+      expect(updated.id, original.id);
+      expect(updated.name, original.name);
+      expect(updated.latitude, original.latitude);
+      expect(updated.longitude, original.longitude);
+    });
+
+    test('모든 필드를 변경할 수 있다', () {
+      const original = Restaurant(
+        id: '1',
+        name: '식당',
+        categoryName: '음식점',
+        phone: '',
+        addressName: '서울',
+        roadAddressName: '서울로',
+        latitude: 37.0,
+        longitude: 127.0,
+        distance: 100,
+        placeUrl: '',
+      );
+
+      final updated = original.copyWith(
+        id: '2',
+        name: '새 식당',
+        categoryName: '카페',
+        phone: '010',
+        addressName: '부산',
+        roadAddressName: '부산로',
+        latitude: 35.0,
+        longitude: 129.0,
+        distance: 200,
+        placeUrl: 'url',
+      );
+
+      expect(updated.id, '2');
+      expect(updated.name, '새 식당');
+      expect(updated.categoryName, '카페');
+      expect(updated.phone, '010');
+      expect(updated.addressName, '부산');
+      expect(updated.roadAddressName, '부산로');
+      expect(updated.latitude, 35.0);
+      expect(updated.longitude, 129.0);
+      expect(updated.distance, 200);
+      expect(updated.placeUrl, 'url');
+    });
+
+    test('파라미터 없이 호출하면 동일한 객체를 반환한다', () {
+      const original = Restaurant(
+        id: '1',
+        name: '식당',
+        categoryName: '음식점',
+        phone: '',
+        addressName: '서울',
+        roadAddressName: '서울로',
+        latitude: 37.0,
+        longitude: 127.0,
+        distance: 100,
+        placeUrl: '',
+      );
+
+      final copy = original.copyWith();
+
+      expect(copy.id, original.id);
+      expect(copy.name, original.name);
+      expect(copy.distance, original.distance);
+    });
+  });
+
   group('Restaurant.toJson', () {
     test('모든 필드를 올바르게 직렬화한다', () {
       const restaurant = Restaurant(

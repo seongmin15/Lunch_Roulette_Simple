@@ -315,6 +315,21 @@ Any active status -> Cancelled
   - [x] 테스트 전체 통과 (125건), flutter analyze 0 errors
 - Result: API 호출 40회 → 2~7회로 절감. PlaceType 토글로 식당/카페 전환. 1km 전체 fetch + 클라이언트 사이드 거리/카테고리 필터링. 테스트 125건 통과, flutter analyze 에러 0건.
 
+### T021: Category Search API + 2×2 Grid로 45건 제한 우회
+- Status: Done
+- Service: lunch-roulette-app
+- Origin: T020
+- Description: 카카오 API의 pageable_count 상한 45건 제한을 우회하기 위해 keyword search를 category search API(`/v2/local/search/category.json`)로 전환하고, 2×2 rect 그리드 분할로 최대 180곳 수집. rect 파라미터 사용 시 distance 필드가 반환되지 않아 Haversine 공식으로 클라이언트 사이드 거리 계산.
+- Acceptance Criteria:
+  - [x] GeoUtils 유틸리티 (haversineDistance, boundingBox, splitIntoGrid) 구현
+  - [x] Restaurant.copyWith() 메서드 추가
+  - [x] RestaurantService.searchByCategoryGrid() 구현 (4셀 병렬, 페이지네이션, 중복제거, Haversine 거리, 반경 필터링)
+  - [x] RestaurantListNotifier에서 searchByCategoryGrid() 호출로 전환
+  - [x] geo_utils_test (9건), restaurant copyWith test (3건), restaurant_service searchByCategoryGrid test (8건), provider mock 업데이트
+  - [x] flutter test 전체 145건 통과
+  - [x] flutter analyze 에러 0건
+- Result: GeoUtils(haversine/bbox/grid), Restaurant.copyWith, RestaurantService.searchByCategoryGrid (category search + 2×2 grid + Haversine distance), _handleDioError 에러 처리 통합. 기존 searchAllByCategory/searchNearbyRestaurants 호환 유지. 전체 145건 통과, flutter analyze 에러 0건.
+
 ### T019: 거리 필터 변경 시 API 재호출 안 되는 버그 수정
 - Status: Done
 - Service: lunch-roulette-app
