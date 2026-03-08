@@ -38,3 +38,10 @@
   - API 에러 처리: 타임아웃, 네트워크 오류, 401 인증 오류, 서버 오류
   - .env.example에 KAKAO_REST_API_KEY 추가
   - 단위 테스트 14건 (Restaurant 모델 5건, RestaurantService 9건)
+- T004: 홈 화면 — 식당 목록 표시 UI
+  - RestaurantListState (sealed class): 5가지 상태 (Initial/Loading/Loaded/Empty/Error)
+  - RestaurantListNotifier (Riverpod StateNotifier): 식당 검색 플로우 관리
+  - RestaurantListCard 위젯: 식당 이름, 카테고리, 주소, 거리 표시
+  - HomeScreen 업데이트: 위치 획득 후 자동 식당 검색, ListView.builder + RefreshIndicator
+  - 상태별 UI: 로딩/목록/빈결과/에러 + 재시도 버튼
+  - 테스트 9건 (RestaurantListNotifier 6건, RestaurantListCard 3건)

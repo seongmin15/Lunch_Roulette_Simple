@@ -106,18 +106,18 @@ Any active status -> Cancelled
 - Result: 카카오 로컬 API 기반 RestaurantService 구현 (ADR-4). Restaurant 모델 10개 필드 (id, name, categoryName, phone, addressName, roadAddressName, latitude, longitude, distance, placeUrl). Dio 기반 API 클라이언트 + 에러 처리 (타임아웃/네트워크/401/서버오류). 14개 테스트 전체 통과. flutter analyze 에러 0건.
 
 ### T004: 홈 화면 — 식당 목록 표시 UI
-- Status: Ready
+- Status: Done
 - Service: lunch-roulette-app
 - Description: 앱 실행 시 자동으로 주변 식당을 로딩하여 리스트로 표시하는 홈 화면을 구현한다. 로딩/에러/빈 결과 상태를 처리한다.
 - Acceptance Criteria:
-  - [ ] 홈 화면 위젯 구현 (RestaurantListCard 포함)
-  - [ ] Riverpod provider로 식당 목록 상태 관리
-  - [ ] 로딩 상태 표시 (CircularProgressIndicator)
-  - [ ] 빈 결과 상태 표시
-  - [ ] 에러 상태 표시 및 재시도 버튼
-  - [ ] GoRouter에 홈 화면 라우트 등록
-  - [ ] 위젯 테스트 작성
-- Result:
+  - [x] 홈 화면 위젯 구현 (RestaurantListCard 포함)
+  - [x] Riverpod provider로 식당 목록 상태 관리
+  - [x] 로딩 상태 표시 (CircularProgressIndicator)
+  - [x] 빈 결과 상태 표시
+  - [x] 에러 상태 표시 및 재시도 버튼
+  - [x] GoRouter에 홈 화면 라우트 등록
+  - [x] 위젯 테스트 작성
+- Result: RestaurantListState(sealed class 5상태) + RestaurantListNotifier + RestaurantListCard 위젯 구현. HomeScreen에서 위치 획득 후 자동 식당 검색, ListView.builder + RefreshIndicator, 상태별 UI 처리. 테스트 9건 (Provider 6건 + Widget 3건), 전체 40건 통과. flutter analyze 에러 0건. GoRouter 라우트는 T001에서 이미 등록 완료.
 
 ### T005: 필터 화면 — 가격대·거리 필터 설정
 - Status: Ready
