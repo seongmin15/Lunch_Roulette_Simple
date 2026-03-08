@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:lunch_roulette_app/models/restaurant.dart';
 
@@ -13,7 +14,10 @@ class RestaurantListCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Padding(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.push('/restaurant-detail', extra: restaurant),
+        child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
@@ -62,6 +66,7 @@ class RestaurantListCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }
