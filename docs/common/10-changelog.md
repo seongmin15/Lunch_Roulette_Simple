@@ -88,8 +88,8 @@
   - ListView.builder 및 const 최적화 확인 완료
   - 캐시 테스트 4건 (캐시 히트, 캐시 미스, forceRefresh, clearCache)
 
-- 식당 검색을 100m 단위 반복 검색으로 변경하여 거리별 결과 차별화
-  - searchByAllCategories가 100m~target radius까지 100m 단위로 카테고리별 병렬 검색
+- 식당 검색을 페이지네이션 방식으로 변경하여 더 많은 고유 식당 수집
+  - searchByAllCategories가 target radius에서 pages 파라미터(기본 5)만큼 병렬 페이지 호출
   - ID 기반 중복 제거 후 거리순 정렬
 - T018: 필터 값 영속화 (앱 재시작 시 유지)
   - FilterNotifier에 _load()/_save() 추가 (SharedPreferences JSON 직렬화)
@@ -97,7 +97,8 @@
   - 앱 시작 시 저장된 distance, selectedCategories 복원
 
 ### Changed
-- 거리 필터 범위를 500m~3km에서 100m~1000m으로 축소, API 검색 단위를 100m에서 200m으로 변경
+- 거리 필터 범위를 500m~3km에서 100m~1000m으로 축소
+- 식당 검색을 radius-stepping에서 페이지네이션으로 변경 (동일 반경 내 겹치는 결과 문제 해결)
 
 ### Fixed
 - T019: 거리 필터 변경 시 카카오 API 재호출 안 되는 버그 수정

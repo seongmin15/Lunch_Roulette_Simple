@@ -42,6 +42,7 @@ class MockRestaurantService implements RestaurantService {
     required double longitude,
     required Map<String, String> keywordToCategoryCode,
     int radius = 2000,
+    int pages = 5,
   }) async {
     callCount++;
     if (mockError != null) {
