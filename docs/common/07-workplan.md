@@ -179,12 +179,12 @@ Any active status -> Cancelled
 - Result: StatefulShellRoute.indexedStack로 2탭 NavigationBar 구현 (홈/히스토리). 필터/룰렛/상세는 parentNavigatorKey로 전체 화면 push. 홈 AppBar에서 히스토리 아이콘 제거 (탭으로 이동). 통합 테스트 6건 (NavigationBar 표시, 탭 전환, 탭 유지, 데이터 전달), 전체 88건 통과. flutter analyze 에러 0건.
 
 ### T010: API 응답 캐싱 및 성능 최적화
-- Status: Backlog
+- Status: Done
 - Service: lunch-roulette-app
 - Description: 지도 API 응답을 로컬에 10분간 캐싱하여 중복 호출을 줄인다. ListView 가상화, const 위젯 최적화 등 성능 개선을 적용한다.
 - Acceptance Criteria:
-  - [ ] API 응답 로컬 캐싱 구현 (10분 TTL)
-  - [ ] 캐시 만료 시 자동 갱신
-  - [ ] ListView.builder 사용 확인
-  - [ ] const 생성자 최적화 확인
-- Result:
+  - [x] API 응답 로컬 캐싱 구현 (10분 TTL)
+  - [x] 캐시 만료 시 자동 갱신
+  - [x] ListView.builder 사용 확인
+  - [x] const 생성자 최적화 확인
+- Result: RestaurantListNotifier에 인메모리 캐시 구현 (_CacheEntry, 좌표+radius 키, 10분 TTL). forceRefresh 파라미터로 수동 갱신 지원 (pull-to-refresh, retry). clearCache 메서드 추가. ListView.builder 확인 (홈/히스토리 모두 사용). const 최적화 확인 완료. 캐시 테스트 4건, 전체 92건 통과. flutter analyze 에러 0건.

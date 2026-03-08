@@ -80,3 +80,10 @@
   - 필터/룰렛/상세는 parentNavigatorKey로 전체 화면 push (하단 바 숨김)
   - 홈 AppBar에서 히스토리 아이콘 제거 (하단 탭으로 이동)
   - 통합 테스트 6건 (NavigationBar 표시, 탭 전환, 탭 유지, 데이터 전달)
+- T010: API 응답 캐싱 및 성능 최적화
+  - RestaurantListNotifier에 인메모리 캐시 구현 (좌표+radius 키, 10분 TTL)
+  - 캐시 히트 시 API 재호출 생략, TTL 만료 시 자동 갱신
+  - forceRefresh 파라미터 추가 (pull-to-refresh, retry에서 사용)
+  - clearCache 메서드 추가
+  - ListView.builder 및 const 최적화 확인 완료
+  - 캐시 테스트 4건 (캐시 히트, 캐시 미스, forceRefresh, clearCache)
