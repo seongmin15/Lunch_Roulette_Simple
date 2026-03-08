@@ -34,6 +34,7 @@
 | 2026-03-08 | Ad-hoc: 거리 필터 100m 단위 + 앱 아이콘 | 완료 | 슬라이더 divisions 25, 커스텀 슬롯머신 아이콘 생성 |
 | 2026-03-08 | Ad-hoc: README/모바일 설계 문서 동기화 | 완료 | T016 및 ad-hoc 변경사항 문서 반영 |
 | 2026-03-08 | Ad-hoc: 앱 테마 블루 변경 + README 동기화 | 완료 | 오렌지→딥 블루/인디고 테마 변경, 아이콘 재생성 |
+| 2026-03-08 | T017: 카페 카테고리 검색 수정 (CE7 지원) | 완료 | FoodCategory에 categoryGroupCode 추가, 카페 CE7 코드 전달 |
 
 ---
 
@@ -201,4 +202,12 @@
 - **작업**: 앱 테마를 오렌지에서 딥 블루/인디고로 전면 변경. 앱 아이콘 재생성. README 디자인 설명 동기화.
 - **변경된 파일**: lib/app/theme.dart (primary/secondary/gradient 색상), lib/features/home/screens/home_screen.dart, lib/features/filter/screens/filter_screen.dart, lib/features/roulette/widgets/result_card.dart, lib/features/restaurant_detail/screens/restaurant_detail_screen.dart (shadow color), assets/app_icon.png (블루 재생성), Android/iOS 아이콘 전체, README.md, docs/common/10-changelog.md
 - **의사결정**: primary #3D5AF1 (딥 인디고), secondary #6B7FFF (라이트 인디고), 배경 그라디언트 #EEF0FF→#F8F6F3
+- **미완료/후속**: 없음
+
+### 2026-03-08 — T017: 카페 카테고리 검색 수정 (CE7 지원)
+
+- **작업**: 카카오 로컬 API에서 카페(CE7)와 음식점(FD6)이 별도 카테고리 코드인 문제 수정
+- **계획 범위**: FoodCategory에 categoryGroupCode 추가, RestaurantService 시그니처 변경, Provider 호출부 수정, 테스트 업데이트
+- **변경된 파일**: lib/features/filter/providers/filter_state.dart (categoryGroupCode 필드 추가), lib/services/restaurant_service.dart (categoryGroupCode 파라미터 + Map 시그니처), lib/features/home/providers/restaurant_list_provider.dart (keywordToCategoryCode Map 생성), test/services/restaurant_service_test.dart (+2건 CE7 테스트), test/features/home/providers/restaurant_list_provider_test.dart (mock 시그니처 업데이트), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
+- **의사결정**: searchByAllCategories의 파라미터를 List<String> keywords에서 Map<String, String> keywordToCategoryCode로 변경하여 키워드별 카테고리 코드를 매핑. 서비스 레이어에서 FoodCategory enum을 직접 참조하지 않고 Map으로 분리하여 레이어 독립성 유지.
 - **미완료/후속**: 없음

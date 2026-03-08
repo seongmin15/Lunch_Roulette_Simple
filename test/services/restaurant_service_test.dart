@@ -235,7 +235,23 @@ void main() {
       );
 
       // Default parameters are used (radius=2000, page=1, size=15, sort=distance)
-      // Verified by successful call with no errors
+      expect(mockDio.capturedQueryParams.last['category_group_code'], 'FD6');
+    });
+
+    test('categoryGroupCode 파라미터를 전달할 수 있다', () async {
+      mockDio.mockResponse = Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {'documents': []},
+      );
+
+      await service.searchNearbyRestaurants(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        categoryGroupCode: 'CE7',
+      );
+
+      expect(mockDio.capturedQueryParams.last['category_group_code'], 'CE7');
     });
 
     test('커스텀 파라미터를 전달할 수 있다', () async {
@@ -300,7 +316,7 @@ void main() {
       final result = await service.searchByAllCategories(
         latitude: 37.5665,
         longitude: 126.9780,
-        keywords: ['한식', '중식', '일식'],
+        keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6', '일식': 'FD6'},
       );
 
       // 3 calls made (one per keyword)
@@ -378,7 +394,7 @@ void main() {
       final result = await service.searchByAllCategories(
         latitude: 37.5665,
         longitude: 126.9780,
-        keywords: ['한식', '중식'],
+        keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6'},
       );
 
       expect(result.length, 3); // 4 total - 1 duplicate(id=2)
@@ -430,11 +446,51 @@ void main() {
       final result = await service.searchByAllCategories(
         latitude: 37.5665,
         longitude: 126.9780,
-        keywords: ['한식', '일식'],
+        keywordToCategoryCode: {'한식': 'FD6', '일식': 'FD6'},
       );
 
       expect(result[0].name, '가까운 식당');
       expect(result[1].name, '먼 식당');
+    });
+
+    test('카페 검색 시 CE7 카테고리 코드를 전달한다', () async {
+      mockDio.mockResponse = Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {
+          'documents': [
+            {
+              'id': '1',
+              'place_name': '스타벅스',
+              'category_name': '음식점 > 카페',
+              'phone': '',
+              'address_name': '서울',
+              'road_address_name': '서울',
+              'y': '37.5',
+              'x': '127.0',
+              'distance': '100',
+              'place_url': '',
+            },
+          ],
+        },
+      );
+
+      await service.searchByAllCategories(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        keywordToCategoryCode: {'한식': 'FD6', '카페': 'CE7'},
+      );
+
+      // Verify category_group_code per keyword
+      final cafeCall = mockDio.capturedQueryParams.firstWhere(
+        (params) => params['query'] == '카페',
+      );
+      expect(cafeCall['category_group_code'], 'CE7');
+
+      final koreanCall = mockDio.capturedQueryParams.firstWhere(
+        (params) => params['query'] == '한식',
+      );
+      expect(koreanCall['category_group_code'], 'FD6');
     });
   });
 }
