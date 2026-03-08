@@ -8,6 +8,7 @@ import 'package:lunch_roulette_app/services/restaurant_service.dart';
 class MockRestaurantService implements RestaurantService {
   List<Restaurant>? mockResult;
   Exception? mockError;
+  int callCount = 0;
 
   @override
   dynamic noSuchMethod(Invocation invocation) =>
@@ -22,6 +23,7 @@ class MockRestaurantService implements RestaurantService {
     int size = 15,
     String sort = 'distance',
   }) async {
+    callCount++;
     if (mockError != null) {
       throw mockError!;
     }
@@ -110,6 +112,63 @@ void main() {
 
       // addListener fires with current state first (Initial), then Loading, then Empty
       expect(states, contains(isA<RestaurantListLoading>()));
+    });
+
+    test('동일 파라미터 재호출 시 캐시를 사용한다', () async {
+      mockService.mockResult = [
+        const Restaurant(
+          id: '1',
+          name: '캐시 식당',
+          categoryName: '음식점',
+          phone: '',
+          addressName: '서울시',
+          roadAddressName: '서울시 테헤란로',
+          latitude: 37.5665,
+          longitude: 126.9780,
+          distance: 100,
+          placeUrl: '',
+        ),
+      ];
+
+      await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780);
+      expect(mockService.callCount, 1);
+
+      await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780);
+      expect(mockService.callCount, 1); // 캐시 히트, API 재호출 없음
+
+      expect(notifier.state, isA<RestaurantListLoaded>());
+    });
+
+    test('다른 파라미터 호출 시 캐시를 사용하지 않는다', () async {
+      mockService.mockResult = [];
+
+      await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780, radius: 1000);
+      expect(mockService.callCount, 1);
+
+      await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780, radius: 2000);
+      expect(mockService.callCount, 2); // 다른 radius → 캐시 미스
+    });
+
+    test('forceRefresh 시 캐시를 무시하고 API를 호출한다', () async {
+      mockService.mockResult = [];
+
+      await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780);
+      expect(mockService.callCount, 1);
+
+      await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780, forceRefresh: true);
+      expect(mockService.callCount, 2); // 강제 갱신
+    });
+
+    test('clearCache 후 동일 파라미터 재호출 시 API를 호출한다', () async {
+      mockService.mockResult = [];
+
+      await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780);
+      expect(mockService.callCount, 1);
+
+      notifier.clearCache();
+
+      await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780);
+      expect(mockService.callCount, 2); // 캐시 클리어 후 재호출
     });
 
     test('retry는 fetchRestaurants를 재호출한다', () async {

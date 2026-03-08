@@ -24,6 +24,7 @@
 | 2026-03-08 | T007: 식당 상세 정보 화면 | 완료 | RestaurantDetailCard, 길찾기 연동(url_launcher), GoRouter 라우트 |
 | 2026-03-08 | T008: 히스토리 화면 — 최근 10건 룰렛 결과 관리 | 완료 | SharedPreferences 영속화, 히스토리 화면, 스와이프/전체 삭제 |
 | 2026-03-08 | T009: 네비게이션 및 전체 화면 통합 | 완료 | StatefulShellRoute 2탭 NavigationBar, 통합 테스트 6건 |
+| 2026-03-08 | T010: API 응답 캐싱 및 성능 최적화 | 완료 | 인메모리 캐시 10분 TTL, forceRefresh, 캐시 테스트 4건 |
 
 ---
 
@@ -121,3 +122,11 @@
 - **변경된 파일**: lib/app/router.dart (리팩터링 — StatefulShellRoute, _ScaffoldWithNavBar), lib/features/home/screens/home_screen.dart (수정 — 히스토리 아이콘 제거), test/app/router_test.dart (신규 — 통합 테스트 6건)
 - **의사결정**: 2탭 구성 (홈/히스토리). 필터·룰렛·상세는 전체 화면 push (parentNavigatorKey로 ShellRoute 외부 네비게이션). Material 3 NavigationBar 사용 (BottomNavigationBar 대신).
 - **미완료/후속**: T010 API 응답 캐싱 및 성능 최적화
+
+### 2026-03-08 — T010: API 응답 캐싱 및 성능 최적화
+
+- **작업**: RestaurantListNotifier에 인메모리 캐시 추가, 성능 최적화 검증
+- **계획 범위**: _CacheEntry 클래스, 좌표+radius 키 기반 캐시, 10분 TTL, forceRefresh 파라미터, clearCache, pull-to-refresh 강제 갱신, 캐시 테스트
+- **변경된 파일**: lib/features/home/providers/restaurant_list_provider.dart (수정 — 캐시 로직 추가), lib/features/home/screens/home_screen.dart (수정 — RefreshIndicator forceRefresh), test/features/home/providers/restaurant_list_provider_test.dart (수정 — 캐시 테스트 4건 추가)
+- **의사결정**: 인메모리 Map 캐시 선택 (SharedPreferences/Hive 대비 복잡도 낮고, 앱 세션 내 캐시로 충분). 좌표는 소수점 4자리로 반올림하여 키 생성 (약 11m 정밀도). retry는 forceRefresh: true로 항상 캐시 우회.
+- **미완료/후속**: 전체 태스크 완료

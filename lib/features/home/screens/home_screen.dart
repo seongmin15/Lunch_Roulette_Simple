@@ -213,7 +213,8 @@ class _RestaurantListBody extends ConsumerWidget {
                     .fetchRestaurants(
                         latitude: latitude,
                         longitude: longitude,
-                        radius: filter.distance),
+                        radius: filter.distance,
+                        forceRefresh: true),
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: restaurants.length,
