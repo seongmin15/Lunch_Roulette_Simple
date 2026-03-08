@@ -92,4 +92,62 @@ void main() {
       expect(restaurant.distance, 500);
     });
   });
+
+  group('Restaurant.toJson', () {
+    test('모든 필드를 올바르게 직렬화한다', () {
+      const restaurant = Restaurant(
+        id: '12345',
+        name: '맛있는 식당',
+        categoryName: '음식점 > 한식',
+        phone: '02-1234-5678',
+        addressName: '서울시 강남구 역삼동 123',
+        roadAddressName: '서울시 강남구 테헤란로 123',
+        latitude: 37.5665,
+        longitude: 126.9780,
+        distance: 350,
+        placeUrl: 'https://place.map.kakao.com/12345',
+      );
+
+      final json = restaurant.toJson();
+
+      expect(json['id'], '12345');
+      expect(json['name'], '맛있는 식당');
+      expect(json['categoryName'], '음식점 > 한식');
+      expect(json['phone'], '02-1234-5678');
+      expect(json['addressName'], '서울시 강남구 역삼동 123');
+      expect(json['roadAddressName'], '서울시 강남구 테헤란로 123');
+      expect(json['latitude'], 37.5665);
+      expect(json['longitude'], 126.9780);
+      expect(json['distance'], 350);
+      expect(json['placeUrl'], 'https://place.map.kakao.com/12345');
+    });
+
+    test('toJson → fromJson 라운드트립이 동일한 결과를 반환한다', () {
+      const original = Restaurant(
+        id: '999',
+        name: '라운드트립 식당',
+        categoryName: '음식점 > 일식',
+        phone: '02-9999-9999',
+        addressName: '서울시 서초구',
+        roadAddressName: '서울시 서초구 서초대로',
+        latitude: 37.49,
+        longitude: 127.01,
+        distance: 800,
+        placeUrl: 'https://place.map.kakao.com/999',
+      );
+
+      final restored = Restaurant.fromJson(original.toJson());
+
+      expect(restored.id, original.id);
+      expect(restored.name, original.name);
+      expect(restored.categoryName, original.categoryName);
+      expect(restored.phone, original.phone);
+      expect(restored.addressName, original.addressName);
+      expect(restored.roadAddressName, original.roadAddressName);
+      expect(restored.latitude, original.latitude);
+      expect(restored.longitude, original.longitude);
+      expect(restored.distance, original.distance);
+      expect(restored.placeUrl, original.placeUrl);
+    });
+  });
 }

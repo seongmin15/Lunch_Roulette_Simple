@@ -1,4 +1,6 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:lunch_roulette_app/features/roulette/providers/roulette_history_provider.dart';
 import 'package:lunch_roulette_app/models/restaurant.dart';
@@ -33,6 +35,8 @@ void main() {
   late RouletteHistoryNotifier notifier;
 
   setUp(() {
+    WidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
     notifier = RouletteHistoryNotifier();
   });
 
