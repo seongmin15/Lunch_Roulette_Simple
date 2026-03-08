@@ -6,6 +6,7 @@ import 'package:lunch_roulette_app/app/theme.dart';
 import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/location_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/location_state.dart';
+import 'package:lunch_roulette_app/features/home/providers/place_type_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_state.dart';
 import 'package:lunch_roulette_app/features/home/widgets/restaurant_list_card.dart';
@@ -173,124 +174,163 @@ class _RestaurantListBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final restaurantState = ref.watch(filteredRestaurantsProvider);
-    final filter = ref.watch(filterProvider);
+    final placeType = ref.watch(placeTypeProvider);
 
-    return switch (restaurantState) {
-      RestaurantListInitial() || RestaurantListLoading() => const Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('주변 식당을 검색하고 있습니다...'),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: SegmentedButton<PlaceType>(
+            segments: const [
+              ButtonSegment(
+                value: PlaceType.restaurant,
+                icon: Icon(Icons.restaurant),
+                label: Text('식당'),
+              ),
+              ButtonSegment(
+                value: PlaceType.cafe,
+                icon: Icon(Icons.coffee),
+                label: Text('카페'),
+              ),
             ],
+            selected: {placeType},
+            onSelectionChanged: (selected) {
+              ref.read(placeTypeProvider.notifier).setType(selected.first);
+            },
           ),
         ),
-      RestaurantListLoaded(:final restaurants) => Column(
-          children: [
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () => ref
-                    .read(restaurantListProvider.notifier)
-                    .fetchRestaurants(
-                        latitude: latitude,
-                        longitude: longitude,
-                        radius: filter.distance,
-                        forceRefresh: true),
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: restaurants.length,
-                  itemBuilder: (context, index) =>
-                      RestaurantListCard(restaurant: restaurants[index]),
+        Expanded(
+          child: switch (restaurantState) {
+            RestaurantListInitial() || RestaurantListLoading() => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(placeType == PlaceType.restaurant
+                        ? '주변 식당을 검색하고 있습니다...'
+                        : '주변 카페를 검색하고 있습니다...'),
+                  ],
                 ),
               ),
-            ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: accentGradient,
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF3D5AF1).withValues(alpha:0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: FilledButton.icon(
-                      onPressed: () =>
-                          context.push('/roulette', extra: restaurants),
-                      icon: const Icon(Icons.casino),
-                      label: Text('룰렛 돌리기 (${restaurants.length}곳)'),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
+            RestaurantListLoaded(:final restaurants) => Column(
+                children: [
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () => ref
+                          .read(restaurantListProvider.notifier)
+                          .fetchRestaurants(
+                              latitude: latitude,
+                              longitude: longitude,
+                              placeType: placeType,
+                              forceRefresh: true),
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: restaurants.length,
+                        itemBuilder: (context, index) =>
+                            RestaurantListCard(restaurant: restaurants[index]),
                       ),
                     ),
                   ),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: accentGradient,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF3D5AF1).withValues(alpha:0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: FilledButton.icon(
+                            onPressed: () =>
+                                context.push('/roulette', extra: restaurants),
+                            icon: const Icon(Icons.casino),
+                            label: Text('룰렛 돌리기 (${restaurants.length}곳)'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            RestaurantListEmpty() => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        placeType == PlaceType.restaurant
+                            ? Icons.restaurant
+                            : Icons.coffee,
+                        size: 48,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        placeType == PlaceType.restaurant
+                            ? '주변에 식당이 없습니다.'
+                            : '주변에 카페가 없습니다.',
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      FilledButton.icon(
+                        onPressed: () {
+                          ref
+                              .read(restaurantListProvider.notifier)
+                              .fetchRestaurants(
+                                  latitude: latitude,
+                                  longitude: longitude,
+                                  placeType: placeType);
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('다시 검색'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      RestaurantListEmpty() => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.restaurant, size: 48, color: Colors.grey),
-                const SizedBox(height: 16),
-                const Text('주변에 식당이 없습니다.',
-                    textAlign: TextAlign.center),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () {
-                    ref
-                        .read(restaurantListProvider.notifier)
-                        .fetchRestaurants(
-                            latitude: latitude,
-                            longitude: longitude,
-                            radius: filter.distance);
-                  },
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('다시 검색'),
+            RestaurantListError(:final message) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                      const SizedBox(height: 16),
+                      Text(message, textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      FilledButton.icon(
+                        onPressed: () {
+                          ref
+                              .read(restaurantListProvider.notifier)
+                              .fetchRestaurants(
+                                  latitude: latitude,
+                                  longitude: longitude,
+                                  placeType: placeType);
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('다시 시도'),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
+              ),
+          },
         ),
-      RestaurantListError(:final message) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                const SizedBox(height: 16),
-                Text(message, textAlign: TextAlign.center),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () {
-                    ref
-                        .read(restaurantListProvider.notifier)
-                        .fetchRestaurants(
-                            latitude: latitude,
-                            longitude: longitude,
-                            radius: filter.distance);
-                  },
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('다시 시도'),
-                ),
-              ],
-            ),
-          ),
-        ),
-    };
+      ],
+    );
   }
 }

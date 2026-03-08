@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -17,6 +19,105 @@ class RestaurantService {
     String sort = 'distance',
     String query = '식당',
     String categoryGroupCode = 'FD6',
+  }) async {
+    final response = await _searchRaw(
+      latitude: latitude,
+      longitude: longitude,
+      radius: radius,
+      page: page,
+      size: size,
+      sort: sort,
+      query: query,
+      categoryGroupCode: categoryGroupCode,
+    );
+
+    final documents = response['documents'] as List<dynamic>? ?? [];
+    return documents
+        .map((doc) => Restaurant.fromJson(doc as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Fetches all results for a single category code using auto-pagination.
+  ///
+  /// 1. Calls page=1 to get meta.is_end and meta.pageable_count
+  /// 2. If is_end=false, fires parallel calls for remaining pages
+  /// 3. Deduplicates by ID and sorts by distance
+  Future<List<Restaurant>> searchAllByCategory({
+    required double latitude,
+    required double longitude,
+    required String categoryGroupCode,
+    required String query,
+    int radius = 1000,
+    int size = 15,
+  }) async {
+    // Step 1: fetch page 1 to get meta
+    final firstResponse = await _searchRaw(
+      latitude: latitude,
+      longitude: longitude,
+      radius: radius,
+      page: 1,
+      size: size,
+      query: query,
+      categoryGroupCode: categoryGroupCode,
+    );
+
+    final firstDocuments =
+        firstResponse['documents'] as List<dynamic>? ?? [];
+    final meta = firstResponse['meta'] as Map<String, dynamic>? ?? {};
+    final isEnd = meta['is_end'] as bool? ?? true;
+    final pageableCount = meta['pageable_count'] as int? ?? 0;
+
+    final allDocuments = List<Map<String, dynamic>>.from(
+      firstDocuments.cast<Map<String, dynamic>>(),
+    );
+
+    // Step 2: fetch remaining pages in parallel if needed
+    if (!isEnd && pageableCount > size) {
+      final totalPages = min((pageableCount / size).ceil(), 45);
+      final futures = <Future<Map<String, dynamic>>>[];
+      for (int page = 2; page <= totalPages; page++) {
+        futures.add(_searchRaw(
+          latitude: latitude,
+          longitude: longitude,
+          radius: radius,
+          page: page,
+          size: size,
+          query: query,
+          categoryGroupCode: categoryGroupCode,
+        ));
+      }
+
+      final responses = await Future.wait(futures);
+      for (final response in responses) {
+        final documents = response['documents'] as List<dynamic>? ?? [];
+        allDocuments.addAll(documents.cast<Map<String, dynamic>>());
+      }
+    }
+
+    // Step 3: deduplicate by ID and sort by distance
+    final seen = <String>{};
+    final deduplicated = <Restaurant>[];
+    for (final doc in allDocuments) {
+      final restaurant = Restaurant.fromJson(doc);
+      if (seen.add(restaurant.id)) {
+        deduplicated.add(restaurant);
+      }
+    }
+
+    deduplicated.sort((a, b) => a.distance.compareTo(b.distance));
+    return deduplicated;
+  }
+
+  /// Raw API call that returns the full response data including meta.
+  Future<Map<String, dynamic>> _searchRaw({
+    required double latitude,
+    required double longitude,
+    required int radius,
+    required int page,
+    required int size,
+    String sort = 'distance',
+    required String query,
+    required String categoryGroupCode,
   }) async {
     final apiKey = dotenv.env['KAKAO_REST_API_KEY'];
     if (apiKey == null || apiKey.isEmpty) {
@@ -41,10 +142,7 @@ class RestaurantService {
         },
       );
 
-      final documents = response.data['documents'] as List<dynamic>? ?? [];
-      return documents
-          .map((doc) => Restaurant.fromJson(doc as Map<String, dynamic>))
-          .toList();
+      return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       switch (e.type) {
         case DioExceptionType.connectionTimeout:
@@ -63,43 +161,5 @@ class RestaurantService {
           throw Exception('식당 검색 중 오류가 발생했습니다.');
       }
     }
-  }
-
-  Future<List<Restaurant>> searchByAllCategories({
-    required double latitude,
-    required double longitude,
-    required Map<String, String> keywordToCategoryCode,
-    int radius = 2000,
-    int pages = 5,
-  }) async {
-    // 카테고리별로 여러 페이지를 병렬 호출하여 더 많은 식당 수집
-    final futures = <Future<List<Restaurant>>>[];
-    for (final entry in keywordToCategoryCode.entries) {
-      for (int page = 1; page <= pages; page++) {
-        futures.add(searchNearbyRestaurants(
-          latitude: latitude,
-          longitude: longitude,
-          radius: radius,
-          page: page,
-          query: entry.key,
-          categoryGroupCode: entry.value,
-        ));
-      }
-    }
-
-    final results = await Future.wait(futures);
-
-    final seen = <String>{};
-    final deduplicated = <Restaurant>[];
-    for (final list in results) {
-      for (final restaurant in list) {
-        if (seen.add(restaurant.id)) {
-          deduplicated.add(restaurant);
-        }
-      }
-    }
-
-    deduplicated.sort((a, b) => a.distance.compareTo(b.distance));
-    return deduplicated;
   }
 }

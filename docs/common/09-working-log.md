@@ -38,6 +38,7 @@
 | 2026-03-08 | T018: 필터 값 영속화 | 완료 | FilterNotifier에 SharedPreferences _load/_save 추가, 테스트 5건 추가 |
 | 2026-03-08 | T019: 거리 필터 API 재호출 버그 수정 | 완료 | Provider<void> 사이드이펙트 → ref.listen 콜백으로 교체 |
 | 2026-03-08 | Ad-hoc: 식당 검색 페이지네이션 전환 | 완료 | radius-stepping → 페이지네이션으로 변경하여 중복 결과 문제 해결 |
+| 2026-03-08 | T020: 식당/카페 선택 + 1km 전체 fetch + 클라이언트 필터링 | 완료 | PlaceType 토글 추가, 자동 페이지네이션, API 호출 40→2~7회 절감, 클라이언트 사이드 거리/카테고리 필터링 |
 
 ---
 
@@ -235,4 +236,12 @@
 - **작업**: radius-stepping 방식(100m~target까지 100m 단위 반복)이 동일한 가까운 식당만 중복 반환하는 문제를 페이지네이션 방식으로 교체
 - **변경된 파일**: lib/services/restaurant_service.dart (searchByAllCategories: radius-step 루프 → pages 파라미터 페이지 루프), test/services/restaurant_service_test.dart (radius:100 → pages:1, 페이지네이션 테스트 추가), test/features/home/providers/restaurant_list_provider_test.dart (MockRestaurantService에 pages 파라미터 추가), docs/common/09-working-log.md, docs/common/10-changelog.md
 - **의사결정**: 카카오 API는 radius 내에서 항상 거리순 상위 15개를 반환하므로, 200m/400m/600m 식 반복은 같은 결과만 중복. target radius에서 page 1,2,3,...을 병렬 호출하면 실제 다른 식당을 수집 가능. 기본 pages=5 → 카테고리당 최대 75개 식당.
+- **미완료/후속**: 없음
+
+### 2026-03-08 — T020: 식당/카페 선택 + 1km 전체 fetch + 클라이언트 필터링
+
+- **작업**: PlaceType 토글(식당/카페) 추가, 1km 전체 자동 페이지네이션 fetch, 거리/카테고리 클라이언트 필터링으로 API 호출 40회→2~7회 절감
+- **계획 범위**: PlaceType enum/provider, RestaurantService.searchAllByCategory (is_end 기반 자동 페이지네이션), FoodCategory 간소화 (cafe 제거), RestaurantListProvider 리팩터링, HomeScreen SegmentedButton, FilterScreen 카페 모드, 테스트 5파일
+- **변경된 파일**: lib/features/home/providers/place_type_provider.dart (신규), lib/services/restaurant_service.dart (searchAllByCategory 추가, searchByAllCategories 삭제, _searchRaw 추출), lib/features/filter/providers/filter_state.dart (cafe 제거, categoryGroupCode 제거), lib/features/home/providers/restaurant_list_provider.dart (placeType 기반 fetch/cache/filter), lib/features/home/screens/home_screen.dart (SegmentedButton 추가), lib/features/filter/screens/filter_screen.dart (카페 모드 카테고리 숨김), test/services/restaurant_service_test.dart, test/features/home/providers/restaurant_list_provider_test.dart, test/features/filter/providers/filter_provider_test.dart, test/features/filter/screens/filter_screen_test.dart, test/features/home/providers/place_type_provider_test.dart (신규), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md, docs/lunch-roulette-app/50-mobile-design.md
+- **의사결정**: 식당(FD6)과 카페(CE7)는 카카오 API에서 완전히 다른 카테고리 코드이므로 별도 PlaceType으로 분리. 1km 반경으로 고정 fetch 후 거리 필터는 클라이언트 사이드로 처리하여 거리 변경 시 API 재호출 불필요. meta.is_end + meta.pageable_count 기반 자동 페이지네이션으로 카카오 API 결과를 빠짐없이 수집 (최대 45페이지 cap).
 - **미완료/후속**: 없음

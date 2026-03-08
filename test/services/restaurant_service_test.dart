@@ -8,11 +8,16 @@ class MockDio implements Dio {
   Response? mockResponse;
   DioException? mockError;
   final List<Map<String, dynamic>> capturedQueryParams = [];
-  final Map<String, Response> responsesByQuery = {};
+  final Map<String, List<Response>> responsesByQueryAndPage = {};
 
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('${invocation.memberName} is not mocked');
+
+  void setResponseForPage(String query, int page, Response response) {
+    final key = '${query}_$page';
+    responsesByQueryAndPage[key] = [response];
+  }
 
   @override
   Future<Response<T>> get<T>(
@@ -29,8 +34,12 @@ class MockDio implements Dio {
     if (queryParameters != null) {
       capturedQueryParams.add(queryParameters);
       final query = queryParameters['query'] as String?;
-      if (query != null && responsesByQuery.containsKey(query)) {
-        return responsesByQuery[query]! as Response<T>;
+      final page = queryParameters['page'] as int?;
+      if (query != null && page != null) {
+        final key = '${query}_$page';
+        if (responsesByQueryAndPage.containsKey(key)) {
+          return responsesByQueryAndPage[key]!.first as Response<T>;
+        }
       }
     }
     return mockResponse! as Response<T>;
@@ -226,7 +235,7 @@ void main() {
       mockDio.mockResponse = Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 200,
-        data: {'documents': []},
+        data: {'documents': [], 'meta': {'is_end': true}},
       );
 
       await service.searchNearbyRestaurants(
@@ -242,7 +251,7 @@ void main() {
       mockDio.mockResponse = Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 200,
-        data: {'documents': []},
+        data: {'documents': [], 'meta': {'is_end': true}},
       );
 
       await service.searchNearbyRestaurants(
@@ -258,7 +267,7 @@ void main() {
       mockDio.mockResponse = Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 200,
-        data: {'documents': []},
+        data: {'documents': [], 'meta': {'is_end': true}},
       );
 
       await service.searchNearbyRestaurants(
@@ -277,7 +286,7 @@ void main() {
       mockDio.mockResponse = Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 200,
-        data: {'documents': []},
+        data: {'documents': [], 'meta': {'is_end': true}},
       );
 
       await service.searchNearbyRestaurants(
@@ -290,8 +299,8 @@ void main() {
     });
   });
 
-  group('RestaurantService.searchByAllCategories', () {
-    test('카테고리별로 병렬 호출하고 결과를 합친다', () async {
+  group('RestaurantService.searchAllByCategory', () {
+    test('단일 페이지(is_end=true)일 때 1회만 호출한다', () async {
       mockDio.mockResponse = Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 200,
@@ -310,32 +319,63 @@ void main() {
               'place_url': '',
             },
           ],
+          'meta': {
+            'total_count': 1,
+            'pageable_count': 1,
+            'is_end': true,
+          },
         },
       );
 
-      final result = await service.searchByAllCategories(
+      final result = await service.searchAllByCategory(
         latitude: 37.5665,
         longitude: 126.9780,
-        keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6', '일식': 'FD6'},
-        pages: 1,
+        categoryGroupCode: 'FD6',
+        query: '음식점',
       );
 
-      // 3 keywords × 1 page = 3 calls
-      expect(mockDio.capturedQueryParams.length, 3);
-      // Same id deduplicates to 1 result
+      expect(mockDio.capturedQueryParams.length, 1);
       expect(result.length, 1);
+      expect(result[0].name, '식당1');
     });
 
-    test('중복 식당을 ID 기준으로 제거한다', () async {
-      mockDio.responsesByQuery['한식'] = Response(
+    test('다중 페이지(is_end=false)일 때 나머지 페이지를 병렬 호출한다', () async {
+      // Page 1: is_end=false, pageable_count=30 → ceil(30/15) = 2 pages total
+      mockDio.setResponseForPage('음식점', 1, Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 200,
         data: {
           'documents': [
             {
               'id': '1',
-              'place_name': '식당A',
-              'category_name': '한식',
+              'place_name': '식당1',
+              'category_name': '음식점',
+              'phone': '',
+              'address_name': '서울',
+              'road_address_name': '서울',
+              'y': '37.5',
+              'x': '127.0',
+              'distance': '100',
+              'place_url': '',
+            },
+          ],
+          'meta': {
+            'total_count': 30,
+            'pageable_count': 30,
+            'is_end': false,
+          },
+        },
+      ));
+
+      mockDio.setResponseForPage('음식점', 2, Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {
+          'documents': [
+            {
+              'id': '2',
+              'place_name': '식당2',
+              'category_name': '음식점',
               'phone': '',
               'address_name': '서울',
               'road_address_name': '서울',
@@ -344,30 +384,65 @@ void main() {
               'distance': '200',
               'place_url': '',
             },
-            {
-              'id': '2',
-              'place_name': '식당B',
-              'category_name': '한식',
-              'phone': '',
-              'address_name': '서울',
-              'road_address_name': '서울',
-              'y': '37.5',
-              'x': '127.0',
-              'distance': '100',
-              'place_url': '',
-            },
           ],
+          'meta': {
+            'total_count': 30,
+            'pageable_count': 30,
+            'is_end': true,
+          },
         },
+      ));
+
+      final result = await service.searchAllByCategory(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        categoryGroupCode: 'FD6',
+        query: '음식점',
       );
-      mockDio.responsesByQuery['중식'] = Response(
+
+      // page 1 + page 2 = 2 calls
+      expect(mockDio.capturedQueryParams.length, 2);
+      expect(result.length, 2);
+      expect(result[0].name, '식당1'); // distance 100
+      expect(result[1].name, '식당2'); // distance 200
+    });
+
+    test('중복 식당을 ID 기준으로 제거한다', () async {
+      // Both pages return id='1'
+      mockDio.setResponseForPage('음식점', 1, Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 200,
         data: {
           'documents': [
             {
-              'id': '2',
-              'place_name': '식당B',
-              'category_name': '한식',
+              'id': '1',
+              'place_name': '식당A',
+              'category_name': '음식점',
+              'phone': '',
+              'address_name': '서울',
+              'road_address_name': '서울',
+              'y': '37.5',
+              'x': '127.0',
+              'distance': '100',
+              'place_url': '',
+            },
+          ],
+          'meta': {
+            'pageable_count': 30,
+            'is_end': false,
+          },
+        },
+      ));
+
+      mockDio.setResponseForPage('음식점', 2, Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {
+          'documents': [
+            {
+              'id': '1',
+              'place_name': '식당A',
+              'category_name': '음식점',
               'phone': '',
               'address_name': '서울',
               'road_address_name': '서울',
@@ -377,34 +452,40 @@ void main() {
               'place_url': '',
             },
             {
-              'id': '3',
-              'place_name': '식당C',
-              'category_name': '중식',
+              'id': '2',
+              'place_name': '식당B',
+              'category_name': '음식점',
               'phone': '',
               'address_name': '서울',
               'road_address_name': '서울',
               'y': '37.5',
               'x': '127.0',
-              'distance': '300',
+              'distance': '200',
               'place_url': '',
             },
           ],
+          'meta': {
+            'pageable_count': 30,
+            'is_end': true,
+          },
         },
-      );
+      ));
 
-      final result = await service.searchByAllCategories(
+      final result = await service.searchAllByCategory(
         latitude: 37.5665,
         longitude: 126.9780,
-        keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6'},
-        pages: 1,
+        categoryGroupCode: 'FD6',
+        query: '음식점',
       );
 
-      expect(result.length, 3); // 4 total - 1 duplicate(id=2)
-      expect(result.map((r) => r.id).toList(), ['2', '1', '3']); // sorted by distance
+      // 3 total docs - 1 duplicate = 2 unique
+      expect(result.length, 2);
+      expect(result[0].id, '1');
+      expect(result[1].id, '2');
     });
 
     test('결과를 거리 순으로 정렬한다', () async {
-      mockDio.responsesByQuery['한식'] = Response(
+      mockDio.mockResponse = Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 200,
         data: {
@@ -412,7 +493,7 @@ void main() {
             {
               'id': '1',
               'place_name': '먼 식당',
-              'category_name': '한식',
+              'category_name': '음식점',
               'phone': '',
               'address_name': '서울',
               'road_address_name': '서울',
@@ -421,18 +502,10 @@ void main() {
               'distance': '500',
               'place_url': '',
             },
-          ],
-        },
-      );
-      mockDio.responsesByQuery['일식'] = Response(
-        requestOptions: RequestOptions(path: ''),
-        statusCode: 200,
-        data: {
-          'documents': [
             {
               'id': '2',
               'place_name': '가까운 식당',
-              'category_name': '일식',
+              'category_name': '음식점',
               'phone': '',
               'address_name': '서울',
               'road_address_name': '서울',
@@ -442,21 +515,25 @@ void main() {
               'place_url': '',
             },
           ],
+          'meta': {
+            'pageable_count': 2,
+            'is_end': true,
+          },
         },
       );
 
-      final result = await service.searchByAllCategories(
+      final result = await service.searchAllByCategory(
         latitude: 37.5665,
         longitude: 126.9780,
-        keywordToCategoryCode: {'한식': 'FD6', '일식': 'FD6'},
-        pages: 1,
+        categoryGroupCode: 'FD6',
+        query: '음식점',
       );
 
       expect(result[0].name, '가까운 식당');
       expect(result[1].name, '먼 식당');
     });
 
-    test('카페 검색 시 CE7 카테고리 코드를 전달한다', () async {
+    test('카페 카테고리 코드(CE7)를 올바르게 전달한다', () async {
       mockDio.mockResponse = Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 200,
@@ -465,7 +542,7 @@ void main() {
             {
               'id': '1',
               'place_name': '스타벅스',
-              'category_name': '음식점 > 카페',
+              'category_name': '카페',
               'phone': '',
               'address_name': '서울',
               'road_address_name': '서울',
@@ -475,49 +552,45 @@ void main() {
               'place_url': '',
             },
           ],
+          'meta': {
+            'pageable_count': 1,
+            'is_end': true,
+          },
         },
       );
 
-      await service.searchByAllCategories(
+      await service.searchAllByCategory(
         latitude: 37.5665,
         longitude: 126.9780,
-        keywordToCategoryCode: {'한식': 'FD6', '카페': 'CE7'},
-        pages: 1,
+        categoryGroupCode: 'CE7',
+        query: '카페',
       );
 
-      // Verify category_group_code per keyword
-      final cafeCall = mockDio.capturedQueryParams.firstWhere(
-        (params) => params['query'] == '카페',
-      );
-      expect(cafeCall['category_group_code'], 'CE7');
-
-      final koreanCall = mockDio.capturedQueryParams.firstWhere(
-        (params) => params['query'] == '한식',
-      );
-      expect(koreanCall['category_group_code'], 'FD6');
+      expect(mockDio.capturedQueryParams.first['category_group_code'], 'CE7');
+      expect(mockDio.capturedQueryParams.first['query'], '카페');
     });
 
-    test('카테고리별로 여러 페이지를 병렬 호출한다', () async {
-      mockDio.mockResponse = Response(
+    test('에러 발생 시 예외를 전파한다', () async {
+      mockDio.mockError = DioException(
         requestOptions: RequestOptions(path: ''),
-        statusCode: 200,
-        data: {'documents': []},
+        type: DioExceptionType.connectionError,
       );
 
-      await service.searchByAllCategories(
-        latitude: 37.5665,
-        longitude: 126.9780,
-        keywordToCategoryCode: {'한식': 'FD6', '중식': 'FD6'},
-        pages: 3,
+      expect(
+        () => service.searchAllByCategory(
+          latitude: 37.5665,
+          longitude: 126.9780,
+          categoryGroupCode: 'FD6',
+          query: '음식점',
+        ),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('네트워크 연결을 확인해 주세요'),
+          ),
+        ),
       );
-
-      // 2 keywords × 3 pages = 6 calls
-      expect(mockDio.capturedQueryParams.length, 6);
-
-      final pageNumbers = mockDio.capturedQueryParams
-          .map((p) => p['page'] as int)
-          .toSet();
-      expect(pageNumbers, {1, 2, 3});
     });
   });
 }

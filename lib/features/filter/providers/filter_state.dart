@@ -1,17 +1,15 @@
 enum FoodCategory {
-  korean('한식', '한식', 'FD6'),
-  chinese('중식', '중식', 'FD6'),
-  japanese('일식', '일식', 'FD6'),
-  western('양식', '양식', 'FD6'),
-  snack('분식', '분식', 'FD6'),
-  chicken('치킨', '치킨', 'FD6'),
-  pizza('피자', '피자', 'FD6'),
-  cafe('카페', '카페', 'CE7');
+  korean('한식', '한식'),
+  chinese('중식', '중식'),
+  japanese('일식', '일식'),
+  western('양식', '양식'),
+  snack('분식', '분식'),
+  chicken('치킨', '치킨'),
+  pizza('피자', '피자');
 
   final String label;
   final String keyword;
-  final String categoryGroupCode;
-  const FoodCategory(this.label, this.keyword, this.categoryGroupCode);
+  const FoodCategory(this.label, this.keyword);
 }
 
 class FilterState {
