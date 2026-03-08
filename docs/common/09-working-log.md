@@ -20,6 +20,7 @@
 | 2026-03-08 | T003: 지도 API 연동 — 주변 식당 목록 조회 | 완료 | 카카오 로컬 API 기반 Restaurant 모델 + RestaurantService 구현 |
 | 2026-03-08 | T004: 홈 화면 — 식당 목록 표시 UI | 완료 | 위치 획득 후 식당 목록 로딩/표시, RestaurantListCard, 상태별 UI |
 | 2026-03-08 | T005: 필터 화면 — 가격대·거리 필터 설정 | 완료 | 거리 슬라이더 + 가격대 선택 필터, 기본 거리 1000m |
+| 2026-03-08 | T006: 룰렛 화면 — 애니메이션 및 무작위 선택 | 완료 | RouletteWheel 애니메이션, 무작위 선택, ResultCard, 히스토리 저장 |
 
 ---
 
@@ -85,3 +86,11 @@
 - **변경된 파일**: lib/features/filter/providers/filter_state.dart (신규), lib/features/filter/providers/filter_provider.dart (신규), lib/features/filter/screens/filter_screen.dart (신규), lib/features/home/screens/home_screen.dart (수정 — 필터 버튼, ref.listen 연동), lib/features/home/providers/restaurant_list_provider.dart (수정 — radius 파라미터 추가), lib/app/router.dart (수정 — /filter 라우트), test/features/filter/ (신규 테스트 2파일), docs/
 - **의사결정**: 거리 기본값 1000m (사용자 승인). 카카오 API가 가격 정보를 제공하지 않으므로 가격대 필터는 UI만 구현하고 안내 문구 표시. 필터 변경 시 ref.listen으로 감지하여 새 radius로 API 재호출. 홈 AppBar에 Badge 아이콘으로 필터 활성 상태 표시.
 - **미완료/후속**: T006 룰렛 화면 — 애니메이션 및 무작위 선택
+
+### 2026-03-08 — T006: 룰렛 화면 — 애니메이션 및 무작위 선택
+
+- **작업**: RouletteWheel(CustomPainter) 애니메이션 + 무작위 선택 + ResultCard + 인메모리 히스토리 저장
+- **계획 범위**: RouletteWheel, ResultCard, RouletteScreen, HistoryEntry 모델, RouletteHistoryNotifier, HomeScreen 룰렛 버튼, GoRouter /roulette 라우트, 테스트
+- **변경된 파일**: lib/models/history_entry.dart (신규), lib/features/roulette/providers/roulette_history_provider.dart (신규), lib/features/roulette/widgets/roulette_wheel.dart (신규), lib/features/roulette/widgets/result_card.dart (신규), lib/features/roulette/screens/roulette_screen.dart (신규), lib/features/home/screens/home_screen.dart (수정), lib/app/router.dart (수정), test/features/roulette/ (신규 3파일)
+- **의사결정**: CustomPainter로 원형 룰렛 구현 (외부 패키지 없이). easeOutCubic 감속 커브로 자연스러운 멈춤 효과. 히스토리는 인메모리 StateNotifier로 구현 (T008에서 영속화 예정). 식당 목록을 GoRouter extra로 전달.
+- **미완료/후속**: T007 식당 상세 정보 화면

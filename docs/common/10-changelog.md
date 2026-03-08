@@ -52,3 +52,10 @@
   - 홈 화면 AppBar에 필터 버튼 + Badge 표시
   - GoRouter /filter 라우트 추가
   - 테스트 12건 (FilterNotifier 5건 + FilterState 2건 + FilterScreen 5건)
+- T006: 룰렛 화면 — 애니메이션 및 무작위 선택
+  - RouletteWheel (CustomPainter): 원형 룰렛 시각화, 색상 섹션, 식당 이름 라벨, 화살표 마커
+  - RouletteScreen: AnimationController + easeOutCubic 감속 애니메이션, 돌리기/다시 돌리기 버튼
+  - ResultCard: 선택된 식당 강조 표시 (이름, 카테고리, 주소, 거리)
+  - HistoryEntry 모델 + RouletteHistoryNotifier: 인메모리 히스토리 저장 (최대 10건)
+  - 홈 화면에 "룰렛 돌리기" 버튼 추가, GoRouter /roulette 라우트
+  - 테스트 11건 (RouletteHistory 6건 + ResultCard 2건 + RouletteScreen 3건)
