@@ -52,6 +52,21 @@ class MockRestaurantService implements RestaurantService {
     }
     return mockResult ?? [];
   }
+
+  @override
+  Future<List<Restaurant>> searchByCategoryGrid({
+    required double latitude,
+    required double longitude,
+    required String categoryGroupCode,
+    int radius = 1000,
+    int size = 15,
+  }) async {
+    callCount++;
+    if (mockError != null) {
+      throw mockError!;
+    }
+    return mockResult ?? [];
+  }
 }
 
 void main() {

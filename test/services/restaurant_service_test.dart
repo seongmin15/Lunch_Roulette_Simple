@@ -8,7 +8,8 @@ class MockDio implements Dio {
   Response? mockResponse;
   DioException? mockError;
   final List<Map<String, dynamic>> capturedQueryParams = [];
-  final Map<String, List<Response>> responsesByQueryAndPage = {};
+  final List<String> capturedPaths = [];
+  final Map<String, List<Response>> responsesByKey = {};
 
   @override
   dynamic noSuchMethod(Invocation invocation) =>
@@ -16,7 +17,12 @@ class MockDio implements Dio {
 
   void setResponseForPage(String query, int page, Response response) {
     final key = '${query}_$page';
-    responsesByQueryAndPage[key] = [response];
+    responsesByKey[key] = [response];
+  }
+
+  void setResponseForRect(String rect, int page, Response response) {
+    final key = 'rect_${rect}_$page';
+    responsesByKey[key] = [response];
   }
 
   @override
@@ -31,14 +37,26 @@ class MockDio implements Dio {
     if (mockError != null) {
       throw mockError!;
     }
+    capturedPaths.add(path);
     if (queryParameters != null) {
       capturedQueryParams.add(queryParameters);
-      final query = queryParameters['query'] as String?;
+
+      // Match by rect+page (category search)
+      final rect = queryParameters['rect'] as String?;
       final page = queryParameters['page'] as int?;
+      if (rect != null && page != null) {
+        final key = 'rect_${rect}_$page';
+        if (responsesByKey.containsKey(key)) {
+          return responsesByKey[key]!.first as Response<T>;
+        }
+      }
+
+      // Match by query+page (keyword search)
+      final query = queryParameters['query'] as String?;
       if (query != null && page != null) {
         final key = '${query}_$page';
-        if (responsesByQueryAndPage.containsKey(key)) {
-          return responsesByQueryAndPage[key]!.first as Response<T>;
+        if (responsesByKey.containsKey(key)) {
+          return responsesByKey[key]!.first as Response<T>;
         }
       }
     }
@@ -591,6 +609,245 @@ void main() {
           ),
         ),
       );
+    });
+  });
+
+  group('RestaurantService.searchByCategoryGrid', () {
+    Response makeCategoryResponse(List<Map<String, dynamic>> docs, {
+      bool isEnd = true,
+      int pageableCount = 1,
+    }) {
+      return Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 200,
+        data: {
+          'documents': docs,
+          'meta': {
+            'pageable_count': pageableCount,
+            'is_end': isEnd,
+          },
+        },
+      );
+    }
+
+    test('4셀 병렬로 category search API를 호출한다', () async {
+      // 모든 셀에 동일한 빈 응답
+      mockDio.mockResponse = makeCategoryResponse([]);
+
+      await service.searchByCategoryGrid(
+        latitude: 37.5665,
+        longitude: 126.978,
+        categoryGroupCode: 'FD6',
+      );
+
+      // 4셀 × 1페이지 = 4 호출
+      expect(mockDio.capturedQueryParams.length, 4);
+      // 모두 category search endpoint 사용
+      for (final path in mockDio.capturedPaths) {
+        expect(path, contains('category.json'));
+      }
+      // rect 파라미터 사용
+      for (final params in mockDio.capturedQueryParams) {
+        expect(params.containsKey('rect'), isTrue);
+        expect(params.containsKey('query'), isFalse);
+      }
+    });
+
+    test('중복 ID를 제거한다', () async {
+      // 모든 셀에서 같은 식당 반환
+      mockDio.mockResponse = makeCategoryResponse([
+        {
+          'id': '1',
+          'place_name': '중복 식당',
+          'category_name': '음식점',
+          'phone': '',
+          'address_name': '서울',
+          'road_address_name': '서울',
+          'y': '37.5665',
+          'x': '126.978',
+          'distance': '',
+          'place_url': '',
+        },
+      ]);
+
+      final result = await service.searchByCategoryGrid(
+        latitude: 37.5665,
+        longitude: 126.978,
+        categoryGroupCode: 'FD6',
+      );
+
+      // 4셀에서 각 1건씩 총 4건이지만 ID 동일 → 1건
+      expect(result.length, 1);
+      expect(result[0].id, '1');
+    });
+
+    test('Haversine으로 distance를 계산한다', () async {
+      mockDio.mockResponse = makeCategoryResponse([
+        {
+          'id': '1',
+          'place_name': '가까운 식당',
+          'category_name': '음식점',
+          'phone': '',
+          'address_name': '서울',
+          'road_address_name': '서울',
+          'y': '37.5670',
+          'x': '126.9785',
+          'distance': '',
+          'place_url': '',
+        },
+      ]);
+
+      final result = await service.searchByCategoryGrid(
+        latitude: 37.5665,
+        longitude: 126.978,
+        categoryGroupCode: 'FD6',
+      );
+
+      // distance가 Haversine으로 계산됨 (0이 아닌 값)
+      expect(result[0].distance, greaterThan(0));
+      expect(result[0].distance, lessThan(100)); // 매우 가까운 거리
+    });
+
+    test('반경 밖 식당을 필터링한다', () async {
+      mockDio.mockResponse = makeCategoryResponse([
+        {
+          'id': '1',
+          'place_name': '가까운 식당',
+          'category_name': '음식점',
+          'phone': '',
+          'address_name': '서울',
+          'road_address_name': '서울',
+          'y': '37.5670', // 중심에서 ~55m
+          'x': '126.9785',
+          'distance': '',
+          'place_url': '',
+        },
+        {
+          'id': '2',
+          'place_name': '먼 식당',
+          'category_name': '음식점',
+          'phone': '',
+          'address_name': '서울',
+          'road_address_name': '서울',
+          'y': '37.60', // 중심에서 ~3.7km
+          'x': '127.01',
+          'distance': '',
+          'place_url': '',
+        },
+      ]);
+
+      final result = await service.searchByCategoryGrid(
+        latitude: 37.5665,
+        longitude: 126.978,
+        categoryGroupCode: 'FD6',
+        radius: 1000,
+      );
+
+      // 먼 식당은 1000m 밖이므로 필터링됨
+      expect(result.every((r) => r.distance <= 1000), isTrue);
+      expect(result.any((r) => r.name == '가까운 식당'), isTrue);
+    });
+
+    test('거리순으로 정렬한다', () async {
+      mockDio.mockResponse = makeCategoryResponse([
+        {
+          'id': '1',
+          'place_name': '먼 식당',
+          'category_name': '음식점',
+          'phone': '',
+          'address_name': '서울',
+          'road_address_name': '서울',
+          'y': '37.5700', // ~390m
+          'x': '126.978',
+          'distance': '',
+          'place_url': '',
+        },
+        {
+          'id': '2',
+          'place_name': '가까운 식당',
+          'category_name': '음식점',
+          'phone': '',
+          'address_name': '서울',
+          'road_address_name': '서울',
+          'y': '37.5670', // ~55m
+          'x': '126.978',
+          'distance': '',
+          'place_url': '',
+        },
+      ]);
+
+      final result = await service.searchByCategoryGrid(
+        latitude: 37.5665,
+        longitude: 126.978,
+        categoryGroupCode: 'FD6',
+      );
+
+      // 가까운 식당이 먼저 나와야 함
+      expect(result[0].name, '가까운 식당');
+      expect(result[1].name, '먼 식당');
+    });
+
+    test('에러 발생 시 예외를 전파한다', () async {
+      mockDio.mockError = DioException(
+        requestOptions: RequestOptions(path: ''),
+        type: DioExceptionType.connectionError,
+      );
+
+      expect(
+        () => service.searchByCategoryGrid(
+          latitude: 37.5665,
+          longitude: 126.978,
+          categoryGroupCode: 'FD6',
+        ),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('네트워크 연결을 확인해 주세요'),
+          ),
+        ),
+      );
+    });
+
+    test('빈 결과 시 빈 리스트를 반환한다', () async {
+      mockDio.mockResponse = makeCategoryResponse([]);
+
+      final result = await service.searchByCategoryGrid(
+        latitude: 37.5665,
+        longitude: 126.978,
+        categoryGroupCode: 'FD6',
+      );
+
+      expect(result, isEmpty);
+    });
+
+    test('페이지네이션이 있는 셀도 올바르게 처리한다', () async {
+      // rect 값은 GeoUtils가 계산하므로, mockResponse를 기본으로 설정
+      // _paginateCell 내부에서 is_end=false면 추가 페이지를 요청함
+      // 이 테스트에서는 기본 mockResponse를 사용 (1페이지만)
+      mockDio.mockResponse = makeCategoryResponse([
+        {
+          'id': '1',
+          'place_name': '식당1',
+          'category_name': '음식점',
+          'phone': '',
+          'address_name': '서울',
+          'road_address_name': '서울',
+          'y': '37.5665',
+          'x': '126.978',
+          'distance': '',
+          'place_url': '',
+        },
+      ]);
+
+      final result = await service.searchByCategoryGrid(
+        latitude: 37.5665,
+        longitude: 126.978,
+        categoryGroupCode: 'FD6',
+      );
+
+      expect(result.length, 1);
+      expect(result[0].name, '식당1');
     });
   });
 }

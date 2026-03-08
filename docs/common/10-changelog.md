@@ -97,6 +97,14 @@
   - 앱 시작 시 저장된 distance, selectedCategories 복원
 
 ### Changed
+- T021: Category Search API + 2×2 Grid로 45건 제한 우회
+  - keyword search → category search API (`/v2/local/search/category.json`)로 전환
+  - 2×2 rect 그리드 분할로 최대 180곳 수집 (기존 45건 상한 우회)
+  - GeoUtils 유틸리티 추가 (Haversine 거리 계산, boundingBox, splitIntoGrid)
+  - Restaurant.copyWith() 메서드 추가
+  - RestaurantService.searchByCategoryGrid() 구현 (4셀 병렬 호출, 자동 페이지네이션, ID 중복 제거, Haversine 거리 계산, 반경 원 필터링, 거리순 정렬)
+  - _handleDioError()로 중복 에러 처리 통합
+  - 기존 searchAllByCategory/searchNearbyRestaurants 호환 유지
 - T020: 식당/카페 선택 토글 + 1km 전체 fetch + 클라이언트 필터링
   - PlaceType enum(식당/카페) + SegmentedButton 토글 추가
   - RestaurantService.searchAllByCategory() 자동 페이지네이션 (is_end/pageable_count 기반)
