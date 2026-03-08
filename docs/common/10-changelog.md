@@ -24,3 +24,11 @@
   - app/app.dart, app/router.dart, app/theme.dart 구성
   - features/ (home, filter, roulette, restaurant_detail, history) 구조 생성
   - .env.example 생성
+- T002: 위치 권한 요청 및 현재 위치 조회 기능
+  - geolocator, permission_handler, mockito, build_runner 의존성 추가
+  - Android/iOS 플랫폼 위치 권한 설정
+  - LocationService: 권한 확인/요청, GPS 활성화 확인, 현재 위치 조회
+  - LocationState (sealed class): 6가지 상태 (Initial/Loading/Loaded/PermissionDenied/PermanentlyDenied/ServiceDisabled/Error)
+  - LocationNotifier (Riverpod StateNotifier): 위치 조회 플로우 관리
+  - HomeScreen: ConsumerStatefulWidget으로 변환, 모든 위치 상태별 UI 렌더링
+  - 단위 테스트 17건 (LocationService 7건, LocationNotifier 9건, App 위젯 1건)
