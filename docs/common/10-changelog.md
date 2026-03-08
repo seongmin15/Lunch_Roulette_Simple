@@ -45,3 +45,10 @@
   - HomeScreen 업데이트: 위치 획득 후 자동 식당 검색, ListView.builder + RefreshIndicator
   - 상태별 UI: 로딩/목록/빈결과/에러 + 재시도 버튼
   - 테스트 9건 (RestaurantListNotifier 6건, RestaurantListCard 3건)
+- T005: 필터 화면 — 가격대·거리 필터 설정
+  - FilterState + FilterNotifier (Riverpod StateNotifier): 거리/가격대 필터 상태 관리
+  - FilterScreen: DistanceSlider (500m~3km), PriceRangeSelector (ChoiceChip)
+  - 필터 변경 시 새 radius로 카카오 API 재호출
+  - 홈 화면 AppBar에 필터 버튼 + Badge 표시
+  - GoRouter /filter 라우트 추가
+  - 테스트 12건 (FilterNotifier 5건 + FilterState 2건 + FilterScreen 5건)

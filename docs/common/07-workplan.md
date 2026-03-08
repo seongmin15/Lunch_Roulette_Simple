@@ -120,16 +120,16 @@ Any active status -> Cancelled
 - Result: RestaurantListState(sealed class 5상태) + RestaurantListNotifier + RestaurantListCard 위젯 구현. HomeScreen에서 위치 획득 후 자동 식당 검색, ListView.builder + RefreshIndicator, 상태별 UI 처리. 테스트 9건 (Provider 6건 + Widget 3건), 전체 40건 통과. flutter analyze 에러 0건. GoRouter 라우트는 T001에서 이미 등록 완료.
 
 ### T005: 필터 화면 — 가격대·거리 필터 설정
-- Status: Ready
+- Status: Done
 - Service: lunch-roulette-app
 - Description: 거리(슬라이더)와 가격대(선택) 필터를 설정하는 화면을 구현한다. 필터 적용 시 식당 목록이 필터링된다.
 - Acceptance Criteria:
-  - [ ] 필터 화면 위젯 구현 (DistanceSlider, PriceRangeSelector)
-  - [ ] 필터 상태 Riverpod provider 구현
-  - [ ] 필터 적용 시 홈 화면 식당 목록 필터링
-  - [ ] 필터 초기화 기능
-  - [ ] 위젯 테스트 작성
-- Result:
+  - [x] 필터 화면 위젯 구현 (DistanceSlider, PriceRangeSelector)
+  - [x] 필터 상태 Riverpod provider 구현
+  - [x] 필터 적용 시 홈 화면 식당 목록 필터링
+  - [x] 필터 초기화 기능
+  - [x] 위젯 테스트 작성
+- Result: FilterState + FilterNotifier + FilterScreen 구현. 거리 슬라이더 (500m~3km, 기본 1000m), 가격대 ChoiceChip (전체/저렴/보통/비싼 — 카카오 API 미지원으로 UI만 구현). 필터 변경 시 새 radius로 API 재호출. 홈 화면 AppBar에 필터 버튼 (Badge 표시). 테스트 12건 (Provider 7건 + Widget 5건), 전체 52건 통과. flutter analyze 에러 0건.
 
 ### T006: 룰렛 화면 — 애니메이션 및 무작위 선택
 - Status: Ready
