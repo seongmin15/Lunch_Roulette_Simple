@@ -168,15 +168,15 @@ Any active status -> Cancelled
 - Result: SharedPreferences 기반 히스토리 영속화 구현. Restaurant/HistoryEntry에 toJson/fromJson 추가 (Kakao API키 + 로컬 저장키 듀얼 지원). HistoryScreen: 빈 상태/목록/스와이프 삭제(Dismissible)/전체 삭제(확인 다이얼로그). 홈 AppBar에 히스토리 버튼 추가. GoRouter /history 라우트 등록. 테스트 13건 (Restaurant toJson 2건 + HistoryEntry 3건 + HistoryScreen 8건), 전체 82건 통과. flutter analyze 에러 0건.
 
 ### T009: 네비게이션 및 전체 화면 통합
-- Status: Ready
+- Status: Done
 - Service: lunch-roulette-app
 - Description: 모든 화면을 GoRouter로 연결하고, 하단 네비게이션 또는 탭 구조로 앱 전체 네비게이션을 완성한다. 화면 간 데이터 전달을 검증한다.
 - Acceptance Criteria:
-  - [ ] GoRouter에 전체 라우트 구성 완료
-  - [ ] 하단 네비게이션 바 또는 앱바 네비게이션 구현
-  - [ ] 화면 간 데이터 전달 정상 동작 확인
-  - [ ] 통합 테스트 작성 (주요 플로우)
-- Result:
+  - [x] GoRouter에 전체 라우트 구성 완료
+  - [x] 하단 네비게이션 바 또는 앱바 네비게이션 구현
+  - [x] 화면 간 데이터 전달 정상 동작 확인
+  - [x] 통합 테스트 작성 (주요 플로우)
+- Result: StatefulShellRoute.indexedStack로 2탭 NavigationBar 구현 (홈/히스토리). 필터/룰렛/상세는 parentNavigatorKey로 전체 화면 push. 홈 AppBar에서 히스토리 아이콘 제거 (탭으로 이동). 통합 테스트 6건 (NavigationBar 표시, 탭 전환, 탭 유지, 데이터 전달), 전체 88건 통과. flutter analyze 에러 0건.
 
 ### T010: API 응답 캐싱 및 성능 최적화
 - Status: Backlog

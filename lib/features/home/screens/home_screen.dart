@@ -58,10 +58,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         title: const Text('점심 룰렛'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: () => context.push('/history'),
-          ),
-          IconButton(
             icon: Badge(
               isLabelVisible: !filter.isDefault,
               child: const Icon(Icons.tune),
