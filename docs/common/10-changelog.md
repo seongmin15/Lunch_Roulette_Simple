@@ -98,6 +98,7 @@
   - restaurantFetchTriggerProvider (Provider<void> + Future.microtask) 제거
   - restaurantListProvider에 ref.listen(locationProvider) + ref.listen(filterProvider) 콜백 추가
   - HomeScreen에서 ref.watch(restaurantFetchTriggerProvider) 제거
+  - Provider 생성 시 이미 위치가 로드된 상태인 경우 즉시 fetch 트리거 추가
 - T017: 카페 카테고리(CE7) 검색 결과 0건 반환 수정
   - FoodCategory enum에 categoryGroupCode 필드 추가 (cafe→CE7, 나머지→FD6)
   - RestaurantService.searchNearbyRestaurants에 categoryGroupCode 파라미터 추가

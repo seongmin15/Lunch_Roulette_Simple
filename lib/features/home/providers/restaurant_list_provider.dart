@@ -18,6 +18,19 @@ final restaurantListProvider =
   final service = ref.watch(restaurantServiceProvider);
   final notifier = RestaurantListNotifier(service);
 
+  // Provider 생성 시 이미 위치가 로드된 상태라면 즉시 fetch
+  final currentLocation = ref.read(locationProvider);
+  if (currentLocation is LocationLoaded) {
+    final filter = ref.read(filterProvider);
+    Future.microtask(() {
+      notifier.fetchRestaurants(
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+        radius: filter.distance,
+      );
+    });
+  }
+
   ref.listen<LocationState>(locationProvider, (_, location) {
     if (location is LocationLoaded) {
       final filter = ref.read(filterProvider);
