@@ -223,15 +223,17 @@ class _RestaurantListBody extends ConsumerWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: () =>
-                      context.push('/roulette', extra: restaurants),
-                  icon: const Icon(Icons.casino),
-                  label: Text('룰렛 돌리기 (${restaurants.length}곳)'),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () =>
+                        context.push('/roulette', extra: restaurants),
+                    icon: const Icon(Icons.casino),
+                    label: Text('룰렛 돌리기 (${restaurants.length}곳)'),
+                  ),
                 ),
               ),
             ),

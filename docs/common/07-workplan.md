@@ -188,3 +188,15 @@ Any active status -> Cancelled
   - [x] ListView.builder 사용 확인
   - [x] const 생성자 최적화 확인
 - Result: RestaurantListNotifier에 인메모리 캐시 구현 (_CacheEntry, 좌표+radius 키, 10분 TTL). forceRefresh 파라미터로 수동 갱신 지원 (pull-to-refresh, retry). clearCache 메서드 추가. ListView.builder 확인 (홈/히스토리 모두 사용). const 최적화 확인 완료. 캐시 테스트 4건, 전체 92건 통과. flutter analyze 에러 0건.
+
+### T011: 전체 화면 — 하단 시스템 바 겹침 수정
+- Status: Done
+- Service: lunch-roulette-app
+- Description: 시스템 네비게이션 바(Android 제스처 바 / iOS 홈 인디케이터)가 앱 하단 버튼과 겹치는 문제를 수정한다.
+- Acceptance Criteria:
+  - [x] main.dart에 edge-to-edge 모드 및 투명 시스템 내비게이션 바 설정
+  - [x] HomeScreen 하단 "룰렛 돌리기" 버튼에 SafeArea 적용
+  - [x] RouletteScreen 하단 버튼 Row에 SafeArea 적용
+  - [x] 기존 92개 테스트 전체 통과
+  - [x] flutter analyze 에러 0건
+- Result: main.dart에 SystemChrome.setEnabledSystemUIMode(edgeToEdge) + 투명 시스템 바 설정. HomeScreen/RouletteScreen 하단 버튼에 SafeArea 래핑. FilterScreen은 이미 SafeArea 적용 완료. RestaurantDetailScreen은 ListView body에 버튼이 있어 SafeArea 불필요. 전체 92건 통과, flutter analyze 에러 0건.

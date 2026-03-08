@@ -25,6 +25,7 @@
 | 2026-03-08 | T008: 히스토리 화면 — 최근 10건 룰렛 결과 관리 | 완료 | SharedPreferences 영속화, 히스토리 화면, 스와이프/전체 삭제 |
 | 2026-03-08 | T009: 네비게이션 및 전체 화면 통합 | 완료 | StatefulShellRoute 2탭 NavigationBar, 통합 테스트 6건 |
 | 2026-03-08 | T010: API 응답 캐싱 및 성능 최적화 | 완료 | 인메모리 캐시 10분 TTL, forceRefresh, 캐시 테스트 4건 |
+| 2026-03-08 | T011: 전체 화면 — 하단 바 겹침 수정 | 완료 | edge-to-edge 모드 + SafeArea 적용 (HomeScreen, RouletteScreen) |
 
 ---
 
@@ -130,3 +131,10 @@
 - **변경된 파일**: lib/features/home/providers/restaurant_list_provider.dart (수정 — 캐시 로직 추가), lib/features/home/screens/home_screen.dart (수정 — RefreshIndicator forceRefresh), test/features/home/providers/restaurant_list_provider_test.dart (수정 — 캐시 테스트 4건 추가)
 - **의사결정**: 인메모리 Map 캐시 선택 (SharedPreferences/Hive 대비 복잡도 낮고, 앱 세션 내 캐시로 충분). 좌표는 소수점 4자리로 반올림하여 키 생성 (약 11m 정밀도). retry는 forceRefresh: true로 항상 캐시 우회.
 - **미완료/후속**: 전체 태스크 완료
+
+### 2026-03-08 — T011: 전체 화면 — 하단 시스템 바 겹침 수정
+
+- **작업**: 시스템 네비게이션 바가 앱 하단 버튼과 겹치는 문제 수정
+- **변경된 파일**: lib/main.dart (SystemChrome edge-to-edge 설정), lib/features/home/screens/home_screen.dart (SafeArea 래핑), lib/features/roulette/screens/roulette_screen.dart (SafeArea 래핑), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
+- **의사결정**: FilterScreen은 이미 bottomNavigationBar + SafeArea 사용 중. RestaurantDetailScreen은 ListView body 내 버튼이므로 SafeArea 불필요.
+- **미완료/후속**: T014 거리 필터 미반영 버그 수정
