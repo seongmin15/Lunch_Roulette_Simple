@@ -132,16 +132,16 @@ Any active status -> Cancelled
 - Result: FilterState + FilterNotifier + FilterScreen 구현. 거리 슬라이더 (500m~3km, 기본 1000m), 가격대 ChoiceChip (전체/저렴/보통/비싼 — 카카오 API 미지원으로 UI만 구현). 필터 변경 시 새 radius로 API 재호출. 홈 화면 AppBar에 필터 버튼 (Badge 표시). 테스트 12건 (Provider 7건 + Widget 5건), 전체 52건 통과. flutter analyze 에러 0건.
 
 ### T006: 룰렛 화면 — 애니메이션 및 무작위 선택
-- Status: Ready
+- Status: Done
 - Service: lunch-roulette-app
 - Description: 필터링된 식당 목록을 기반으로 룰렛 휠 애니메이션을 실행하고, 무작위로 하나를 선택하여 결과를 표시하는 화면을 구현한다.
 - Acceptance Criteria:
-  - [ ] 룰렛 휠 애니메이션 위젯 구현 (RouletteWheel)
-  - [ ] 무작위 선택 로직 구현
-  - [ ] 결과 카드 표시 (ResultCard)
-  - [ ] 룰렛 실행 후 결과를 히스토리에 저장
-  - [ ] 위젯 테스트 작성
-- Result:
+  - [x] 룰렛 휠 애니메이션 위젯 구현 (RouletteWheel)
+  - [x] 무작위 선택 로직 구현
+  - [x] 결과 카드 표시 (ResultCard)
+  - [x] 룰렛 실행 후 결과를 히스토리에 저장
+  - [x] 위젯 테스트 작성
+- Result: RouletteWheel(CustomPainter + AnimationController, easeOutCubic 감속) + ResultCard + RouletteScreen 구현. Random으로 인덱스 선택 후 해당 섹션에 멈추는 애니메이션. RouletteHistoryNotifier로 인메모리 히스토리 저장 (최대 10건). 홈 화면에 "룰렛 돌리기" 버튼 추가. 테스트 11건 (History 6건 + ResultCard 2건 + Screen 3건), 전체 63건 통과. flutter analyze 에러 0건.
 
 ### T007: 식당 상세 정보 화면
 - Status: Ready

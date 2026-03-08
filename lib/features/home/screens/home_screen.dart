@@ -204,19 +204,37 @@ class _RestaurantListBody extends ConsumerWidget {
             ],
           ),
         ),
-      RestaurantListLoaded(:final restaurants) => RefreshIndicator(
-          onRefresh: () => ref
-              .read(restaurantListProvider.notifier)
-              .fetchRestaurants(
-                  latitude: latitude,
-                  longitude: longitude,
-                  radius: filter.distance),
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: restaurants.length,
-            itemBuilder: (context, index) =>
-                RestaurantListCard(restaurant: restaurants[index]),
-          ),
+      RestaurantListLoaded(:final restaurants) => Column(
+          children: [
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () => ref
+                    .read(restaurantListProvider.notifier)
+                    .fetchRestaurants(
+                        latitude: latitude,
+                        longitude: longitude,
+                        radius: filter.distance),
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  itemCount: restaurants.length,
+                  itemBuilder: (context, index) =>
+                      RestaurantListCard(restaurant: restaurants[index]),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () =>
+                      context.push('/roulette', extra: restaurants),
+                  icon: const Icon(Icons.casino),
+                  label: Text('룰렛 돌리기 (${restaurants.length}곳)'),
+                ),
+              ),
+            ),
+          ],
         ),
       RestaurantListEmpty() => Center(
           child: Padding(
