@@ -32,3 +32,9 @@
   - LocationNotifier (Riverpod StateNotifier): 위치 조회 플로우 관리
   - HomeScreen: ConsumerStatefulWidget으로 변환, 모든 위치 상태별 UI 렌더링
   - 단위 테스트 17건 (LocationService 7건, LocationNotifier 9건, App 위젯 1건)
+- T003: 카카오 로컬 API 연동 — 주변 식당 목록 조회 (ADR-4)
+  - Restaurant 데이터 모델 (10개 필드: id, name, categoryName, phone, addressName, roadAddressName, latitude, longitude, distance, placeUrl)
+  - RestaurantService: Dio 기반 카카오 키워드 검색 API 클라이언트 (카테고리 FD6, 거리순 정렬)
+  - API 에러 처리: 타임아웃, 네트워크 오류, 401 인증 오류, 서버 오류
+  - .env.example에 KAKAO_REST_API_KEY 추가
+  - 단위 테스트 14건 (Restaurant 모델 5건, RestaurantService 9건)

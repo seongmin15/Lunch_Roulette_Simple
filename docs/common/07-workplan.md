@@ -93,17 +93,17 @@ Any active status -> Cancelled
 - Result: LocationService + LocationNotifier(Riverpod StateNotifier) + sealed LocationState 구현. HomeScreen에서 6가지 상태(Initial/Loading/Loaded/PermissionDenied/PermanentlyDenied/ServiceDisabled/Error) 모두 처리. 17개 테스트 전체 통과. flutter analyze 에러 0건.
 
 ### T003: 지도 API 연동 — 주변 식당 목록 조회
-- Status: Ready
+- Status: Done
 - Service: lunch-roulette-app
 - Description: 선택된 지도 API(카카오/네이버/Google)를 사용하여 현재 위치 주변의 식당 목록을 조회하는 Repository/Service 레이어를 구현한다. API 응답을 파싱하여 Restaurant 모델로 변환한다.
 - Acceptance Criteria:
-  - [ ] Restaurant 데이터 모델 정의 (이름, 주소, 거리, 가격대, 영업시간, 좌표)
-  - [ ] 지도 API 클라이언트 구현 (Dio 기반)
-  - [ ] API 응답 → Restaurant 모델 변환 로직
-  - [ ] API 키를 환경변수로 관리 (flutter_dotenv)
-  - [ ] API 호출 에러 처리 (타임아웃, 네트워크 오류)
-  - [ ] 단위 테스트 작성
-- Result:
+  - [x] Restaurant 데이터 모델 정의 (이름, 주소, 거리, 카테고리, 전화번호, 좌표, 카카오맵 URL)
+  - [x] 지도 API 클라이언트 구현 (Dio 기반)
+  - [x] API 응답 → Restaurant 모델 변환 로직
+  - [x] API 키를 환경변수로 관리 (flutter_dotenv)
+  - [x] API 호출 에러 처리 (타임아웃, 네트워크 오류)
+  - [x] 단위 테스트 작성
+- Result: 카카오 로컬 API 기반 RestaurantService 구현 (ADR-4). Restaurant 모델 10개 필드 (id, name, categoryName, phone, addressName, roadAddressName, latitude, longitude, distance, placeUrl). Dio 기반 API 클라이언트 + 에러 처리 (타임아웃/네트워크/401/서버오류). 14개 테스트 전체 통과. flutter analyze 에러 0건.
 
 ### T004: 홈 화면 — 식당 목록 표시 UI
 - Status: Ready
