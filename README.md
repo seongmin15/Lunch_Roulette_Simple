@@ -4,40 +4,74 @@
 
 ## 소개
 
-현재 위치 기반으로 주변 식당을 자동 수집하고, 가격·거리 필터를 적용한 뒤 룰렛을 돌려 점심 메뉴를 즉시 결정해주는 1인용 모바일 앱입니다.
+현재 위치 기반으로 주변 식당을 자동 수집하고, 거리·카테고리 필터를 적용한 뒤 룰렛을 돌려 점심 메뉴를 즉시 결정해주는 1인용 모바일 앱입니다.
 
 ## 핵심 기능
 
 - **주변 식당 자동 수집**: 앱 실행 시 현재 위치 기반으로 주변 식당 목록을 자동 표시 (30초 이내)
-- **필터링**: 가격대·거리 조건 설정으로 원하는 식당만 선별
+- **필터링**: 거리(500m~3km) 및 음식 카테고리(한식/중식/일식/양식/분식/치킨/피자/카페) 필터
 - **룰렛 실행**: 필터링된 식당 중 하나를 무작위 선택 (5초 이내)
+- **결과 공유**: 룰렛 결과를 다른 사람에게 공유 (share_plus)
 - **히스토리**: 최근 룰렛 결과 10건 저장 및 조회
-- **식당 상세 정보**: 이름, 주소, 거리, 영업시간 확인
+- **식당 상세 정보**: 이름, 주소, 거리, 전화번호, 길찾기(카카오맵/Google Maps) 연동
+- **API 캐싱**: 동일 검색 조건 10분 TTL 인메모리 캐시
 
 ## 기술 스택
 
 - **Framework**: Flutter (Dart)
-- **State Management**: Riverpod
+- **State Management**: Riverpod (StateNotifier)
 - **HTTP Client**: Dio
 - **지도 API**: 카카오 로컬 API (키워드 검색)
 - **로컬 저장**: SharedPreferences
-- **Routing**: GoRouter (StatefulShellRoute)
+- **Routing**: GoRouter (StatefulShellRoute, 2탭 NavigationBar)
+- **공유**: share_plus
+- **외부 연동**: url_launcher (길찾기, 전화, 카카오맵)
 - **Target**: iOS 14.0+ / Android 8.0+ (API 26)
 
 ## 아키텍처
 
 - **패턴**: Monolith (단일 Flutter 앱, 별도 백엔드 없음)
 - **내부 구조**: Feature-first layered architecture (`lib/features/`)
+- **디자인**: 모던 미니멀 스타일 (그라디언트 배경, 둥근 카드, 오렌지 액센트)
 
 ## 화면 구성
 
 | 화면 | 설명 |
 |------|------|
-| Home | 식당 목록 + 필터 칩 + 룰렛 시작 버튼 |
-| Filter | 거리·가격대 설정 |
-| Roulette | 룰렛 애니메이션 + 결과 표시 |
-| Restaurant Detail | 식당 상세 정보 + 길찾기 |
-| History | 최근 10건 룰렛 결과 |
+| Home | 식당 목록 + 필터 버튼(Badge) + 룰렛 시작 버튼 |
+| Filter | 거리 슬라이더(500m~3km) + 카테고리 FilterChip 멀티셀렉트 |
+| Roulette | 룰렛 애니메이션 + 결과 카드 + 공유/상세 버튼 |
+| Restaurant Detail | 식당 상세 정보 + 길찾기/전화/카카오맵 연동 |
+| History | 최근 10건 룰렛 결과 (스와이프 삭제, 전체 삭제) |
+
+## 프로젝트 구조
+
+```
+lib/
+├── app/
+│   ├── app.dart              # MaterialApp.router 부트스트랩
+│   ├── router.dart           # GoRouter + StatefulShellRoute (2탭)
+│   └── theme.dart            # 모던 테마 (그라디언트, 색상, 카드 스타일)
+├── features/
+│   ├── home/
+│   │   ├── screens/          # HomeScreen
+│   │   ├── widgets/          # RestaurantListCard
+│   │   └── providers/        # LocationNotifier, RestaurantListNotifier, 필터/트리거 Provider
+│   ├── filter/
+│   │   ├── screens/          # FilterScreen (거리 + 카테고리)
+│   │   └── providers/        # FilterNotifier, FoodCategory enum
+│   ├── roulette/
+│   │   ├── screens/          # RouletteScreen (애니메이션 + 공유)
+│   │   ├── widgets/          # RouletteWheel, ResultCard
+│   │   └── providers/        # RouletteHistoryNotifier
+│   ├── restaurant_detail/
+│   │   └── screens/          # RestaurantDetailScreen
+│   └── history/
+│       └── screens/          # HistoryScreen
+├── models/                   # Restaurant, HistoryEntry
+├── services/                 # LocationService, RestaurantService
+└── main.dart                 # 엔트리포인트 (edge-to-edge 설정)
+```
 
 ## 시작하기
 
@@ -122,7 +156,7 @@ flutter run -d "iPhone 16"
 ### 5. 테스트 실행
 
 ```bash
-# 전체 테스트 실행
+# 전체 테스트 실행 (98건)
 flutter test
 
 # 정적 분석
