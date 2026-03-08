@@ -74,3 +74,9 @@
   - 홈 화면 AppBar에 히스토리 아이콘 버튼 추가
   - GoRouter /history 라우트 등록
   - 테스트 13건 (Restaurant toJson 2건 + HistoryEntry 3건 + HistoryScreen 8건)
+- T009: 네비게이션 및 전체 화면 통합
+  - StatefulShellRoute.indexedStack로 2탭 하단 NavigationBar 구현 (홈/히스토리)
+  - _ScaffoldWithNavBar 쉘 위젯으로 탭 간 상태 유지
+  - 필터/룰렛/상세는 parentNavigatorKey로 전체 화면 push (하단 바 숨김)
+  - 홈 AppBar에서 히스토리 아이콘 제거 (하단 탭으로 이동)
+  - 통합 테스트 6건 (NavigationBar 표시, 탭 전환, 탭 유지, 데이터 전달)

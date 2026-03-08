@@ -23,6 +23,7 @@
 | 2026-03-08 | T006: 룰렛 화면 — 애니메이션 및 무작위 선택 | 완료 | RouletteWheel 애니메이션, 무작위 선택, ResultCard, 히스토리 저장 |
 | 2026-03-08 | T007: 식당 상세 정보 화면 | 완료 | RestaurantDetailCard, 길찾기 연동(url_launcher), GoRouter 라우트 |
 | 2026-03-08 | T008: 히스토리 화면 — 최근 10건 룰렛 결과 관리 | 완료 | SharedPreferences 영속화, 히스토리 화면, 스와이프/전체 삭제 |
+| 2026-03-08 | T009: 네비게이션 및 전체 화면 통합 | 완료 | StatefulShellRoute 2탭 NavigationBar, 통합 테스트 6건 |
 
 ---
 
@@ -112,3 +113,11 @@
 - **변경된 파일**: lib/models/restaurant.dart (수정 — toJson 추가, fromJson 듀얼 키 지원), lib/models/history_entry.dart (수정 — toJson/fromJson 추가), lib/features/roulette/providers/roulette_history_provider.dart (수정 — SharedPreferences 영속화), lib/features/history/screens/history_screen.dart (신규), lib/features/home/screens/home_screen.dart (수정 — 히스토리 버튼), lib/app/router.dart (수정 — /history 라우트), test/models/restaurant_test.dart (수정 — toJson 테스트), test/models/history_entry_test.dart (신규), test/features/history/screens/history_screen_test.dart (신규), test/features/roulette/providers/roulette_history_provider_test.dart (수정 — SharedPreferences mock)
 - **의사결정**: SharedPreferences 선택 (Hive 대비 경량, 10건 JSON 저장에 적합). Restaurant.fromJson에 듀얼 키 지원 (Kakao API: place_name/x/y + 로컬: name/latitude/longitude)으로 라운드트립 호환성 확보.
 - **미완료/후속**: T009 네비게이션 및 전체 화면 통합
+
+### 2026-03-08 — T009: 네비게이션 및 전체 화면 통합
+
+- **작업**: GoRouter StatefulShellRoute.indexedStack로 하단 NavigationBar 구현, 통합 테스트 작성
+- **계획 범위**: 라우터 리팩터링 (StatefulShellRoute + parentNavigatorKey), _ScaffoldWithNavBar 쉘 위젯, 홈 AppBar 정리, 통합 테스트
+- **변경된 파일**: lib/app/router.dart (리팩터링 — StatefulShellRoute, _ScaffoldWithNavBar), lib/features/home/screens/home_screen.dart (수정 — 히스토리 아이콘 제거), test/app/router_test.dart (신규 — 통합 테스트 6건)
+- **의사결정**: 2탭 구성 (홈/히스토리). 필터·룰렛·상세는 전체 화면 push (parentNavigatorKey로 ShellRoute 외부 네비게이션). Material 3 NavigationBar 사용 (BottomNavigationBar 대신).
+- **미완료/후속**: T010 API 응답 캐싱 및 성능 최적화
