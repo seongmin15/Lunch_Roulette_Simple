@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:lunch_roulette_app/app/theme.dart';
 import 'package:lunch_roulette_app/features/roulette/providers/roulette_history_provider.dart';
 import 'package:lunch_roulette_app/models/history_entry.dart';
 
@@ -12,42 +13,54 @@ class HistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final history = ref.watch(rouletteHistoryProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('히스토리'),
-        actions: [
-          if (history.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.delete_sweep),
-              onPressed: () => _confirmClearAll(context, ref),
-            ),
-        ],
-      ),
-      body: history.isEmpty
-          ? const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.history, size: 48, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('아직 룰렛 기록이 없습니다.'),
-                ],
+    return Container(
+      decoration: const BoxDecoration(gradient: appGradient),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('히스토리'),
+          actions: [
+            if (history.isNotEmpty)
+              IconButton(
+                icon: const Icon(Icons.delete_sweep),
+                onPressed: () => _confirmClearAll(context, ref),
               ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: history.length,
-              itemBuilder: (context, index) => _HistoryListItem(
-                entry: history[index],
-                onTap: () => context.push(
-                  '/restaurant-detail',
-                  extra: history[index].restaurant,
+          ],
+        ),
+        body: history.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha:0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(Icons.history, size: 36, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('아직 룰렛 기록이 없습니다.'),
+                  ],
                 ),
-                onDelete: () => ref
-                    .read(rouletteHistoryProvider.notifier)
-                    .removeAt(index),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                itemCount: history.length,
+                itemBuilder: (context, index) => _HistoryListItem(
+                  entry: history[index],
+                  onTap: () => context.push(
+                    '/restaurant-detail',
+                    extra: history[index].restaurant,
+                  ),
+                  onDelete: () => ref
+                      .read(rouletteHistoryProvider.notifier)
+                      .removeAt(index),
+                ),
               ),
-            ),
+      ),
     );
   }
 
@@ -100,25 +113,60 @@ class _HistoryListItem extends StatelessWidget {
         color: theme.colorScheme.error,
         child: Icon(Icons.delete, color: theme.colorScheme.onError),
       ),
-      child: ListTile(
-        onTap: onTap,
-        leading: CircleAvatar(
-          backgroundColor: theme.colorScheme.primaryContainer,
-          child: Icon(Icons.restaurant, color: theme.colorScheme.onPrimaryContainer),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha:0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        title: Text(
-          entry.restaurant.name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(
-          _formatDate(entry.selectedAt),
-          style: theme.textTheme.bodySmall,
-        ),
-        trailing: Text(
-          _formatDistance(entry.restaurant.distance),
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: theme.colorScheme.primary,
+        child: ListTile(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          onTap: onTap,
+          leading: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha:0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.restaurant, size: 20, color: theme.colorScheme.primary),
+          ),
+          title: Text(
+            entry.restaurant.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          subtitle: Text(
+            _formatDate(entry.selectedAt),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
+          ),
+          trailing: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha:0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Text(
+              _formatDistance(entry.restaurant.distance),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ),
       ),

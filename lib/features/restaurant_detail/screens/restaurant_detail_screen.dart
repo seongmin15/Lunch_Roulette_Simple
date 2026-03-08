@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:lunch_roulette_app/app/theme.dart';
 import 'package:lunch_roulette_app/models/restaurant.dart';
 
 class RestaurantDetailScreen extends StatelessWidget {
@@ -10,17 +11,21 @@ class RestaurantDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('식당 상세'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _RestaurantDetailCard(restaurant: restaurant),
-          const SizedBox(height: 16),
-          _ActionButtons(restaurant: restaurant),
-        ],
+    return Container(
+      decoration: const BoxDecoration(gradient: appGradient),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('식당 상세'),
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _RestaurantDetailCard(restaurant: restaurant),
+            const SizedBox(height: 16),
+            _ActionButtons(restaurant: restaurant),
+          ],
+        ),
       ),
     );
   }
@@ -35,9 +40,20 @@ class _RestaurantDetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha:0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -131,10 +147,27 @@ class _ActionButtons extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        FilledButton.icon(
-          onPressed: () => _openNavigation(context),
-          icon: const Icon(Icons.directions),
-          label: const Text('길찾기'),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: accentGradient,
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFFF6B35).withValues(alpha:0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: FilledButton.icon(
+            onPressed: () => _openNavigation(context),
+            icon: const Icon(Icons.directions),
+            label: const Text('길찾기'),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+            ),
+          ),
         ),
         if (restaurant.phone.isNotEmpty) ...[
           const SizedBox(height: 8),

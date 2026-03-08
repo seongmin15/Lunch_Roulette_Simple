@@ -29,6 +29,7 @@
 | 2026-03-08 | T012: 카테고리 필터 교체 | 완료 | PriceRange→FoodCategory, FilterChip 멀티셀렉트, filteredRestaurantsProvider |
 | 2026-03-08 | T014: 거리 필터 미갱신 버그 수정 | 완료 | ref.listen → 반응형 restaurantFetchTriggerProvider 리팩터링 |
 | 2026-03-08 | T013: 룰렛 결과 공유 기능 | 완료 | share_plus로 결과 공유 버튼 추가 |
+| 2026-03-08 | T015: 앱 디자인 모던화 | 완료 | 그라디언트 배경, 모던 카드, 세련된 색상 팔레트 |
 
 ---
 
@@ -162,3 +163,10 @@
 - **변경된 파일**: pubspec.yaml (share_plus 추가), lib/features/roulette/screens/roulette_screen.dart (공유 버튼 + _share 메서드), test/features/roulette/screens/roulette_screen_test.dart (공유 버튼 테스트 1건), docs/common/07-workplan.md, docs/common/09-working-log.md, docs/common/10-changelog.md
 - **의사결정**: IconButton.filledTonal 스타일로 공유 버튼을 상세 버튼 옆에 배치. 공유 텍스트에 placeUrl이 비어있으면 생략. Share.share() 정적 메서드 사용 (share_plus v10 API).
 - **미완료/후속**: T015 앱 디자인 모던화
+
+### 2026-03-08 — T015: 앱 디자인 모던화 (미니멀 + 그라디언트)
+
+- **작업**: 전체 앱 UI를 모던하고 미니멀한 디자인으로 리뉴얼. 그라디언트 배경, 부드러운 카드, 세련된 색상 팔레트 적용.
+- **변경된 파일**: lib/app/theme.dart (전면 리뉴얼), lib/app/router.dart (NavigationBar 스타일), lib/features/home/screens/home_screen.dart (그라디언트 배경, 버튼 스타일), lib/features/home/widgets/restaurant_list_card.dart (모던 카드), lib/features/roulette/screens/roulette_screen.dart (그라디언트 배경), lib/features/roulette/widgets/result_card.dart (그라디언트 카드), lib/features/roulette/widgets/roulette_wheel.dart (색상 팔레트), lib/features/history/screens/history_screen.dart (그라디언트 배경, 모던 리스트), lib/features/filter/screens/filter_screen.dart (그라디언트 배경, 버튼), lib/features/restaurant_detail/screens/restaurant_detail_screen.dart (그라디언트 배경, 모던 카드)
+- **의사결정**: primary color #FF6B35 (오렌지 유지하되 더 생생한 톤). appGradient(배경용 크림→베이지)와 accentGradient(CTA 버튼용 오렌지 그라디언트) 분리. Card 대신 Container+BoxDecoration으로 커스텀 그림자. withOpacity→withValues API 마이그레이션.
+- **미완료/후속**: 전체 태스크 완료 (T011~T015)
