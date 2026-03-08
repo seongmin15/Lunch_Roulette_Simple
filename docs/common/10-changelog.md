@@ -97,6 +97,14 @@
   - 앱 시작 시 저장된 distance, selectedCategories 복원
 
 ### Changed
+- T020: 식당/카페 선택 토글 + 1km 전체 fetch + 클라이언트 필터링
+  - PlaceType enum(식당/카페) + SegmentedButton 토글 추가
+  - RestaurantService.searchAllByCategory() 자동 페이지네이션 (is_end/pageable_count 기반)
+  - searchByAllCategories() 삭제 (8개 카테고리 × 5 페이지 병렬 호출 방식 제거)
+  - FoodCategory에서 cafe 제거, categoryGroupCode 필드 제거 (7개 카테고리)
+  - 거리 필터를 클라이언트 사이드로 변경 (API 재호출 불필요)
+  - 카페 모드 시 FilterScreen에서 카테고리 섹션 숨김
+  - API 호출 40회 → 2~7회로 절감
 - 거리 필터 범위를 500m~3km에서 100m~1000m으로 축소
 - 식당 검색을 radius-stepping에서 페이지네이션으로 변경 (동일 반경 내 겹치는 결과 문제 해결)
 

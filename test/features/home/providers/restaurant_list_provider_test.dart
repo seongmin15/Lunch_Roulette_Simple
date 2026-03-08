@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
 import 'package:lunch_roulette_app/features/filter/providers/filter_state.dart';
+import 'package:lunch_roulette_app/features/home/providers/place_type_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_provider.dart';
 import 'package:lunch_roulette_app/features/home/providers/restaurant_list_state.dart';
 import 'package:lunch_roulette_app/models/restaurant.dart';
@@ -37,12 +38,13 @@ class MockRestaurantService implements RestaurantService {
   }
 
   @override
-  Future<List<Restaurant>> searchByAllCategories({
+  Future<List<Restaurant>> searchAllByCategory({
     required double latitude,
     required double longitude,
-    required Map<String, String> keywordToCategoryCode,
-    int radius = 2000,
-    int pages = 5,
+    required String categoryGroupCode,
+    required String query,
+    int radius = 1000,
+    int size = 15,
   }) async {
     callCount++;
     if (mockError != null) {
@@ -132,7 +134,6 @@ void main() {
 
       await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780);
 
-      // addListener fires with current state first (Initial), then Loading, then Empty
       expect(states, contains(isA<RestaurantListLoading>()));
     });
 
@@ -161,14 +162,22 @@ void main() {
       expect(notifier.state, isA<RestaurantListLoaded>());
     });
 
-    test('다른 파라미터 호출 시 캐시를 사용하지 않는다', () async {
+    test('다른 placeType 호출 시 캐시를 사용하지 않는다', () async {
       mockService.mockResult = [];
 
-      await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780, radius: 1000);
+      await notifier.fetchRestaurants(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        placeType: PlaceType.restaurant,
+      );
       expect(mockService.callCount, 1);
 
-      await notifier.fetchRestaurants(latitude: 37.5665, longitude: 126.9780, radius: 2000);
-      expect(mockService.callCount, 2); // 다른 radius → 캐시 미스
+      await notifier.fetchRestaurants(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        placeType: PlaceType.cafe,
+      );
+      expect(mockService.callCount, 2); // 다른 placeType → 캐시 미스
     });
 
     test('forceRefresh 시 캐시를 무시하고 API를 호출한다', () async {
@@ -215,6 +224,33 @@ void main() {
       final state = notifier.state as RestaurantListLoaded;
       expect(state.restaurants[0].name, '재시도 식당');
     });
+
+    test('placeType을 전달하여 카페 모드로 검색할 수 있다', () async {
+      mockService.mockResult = [
+        const Restaurant(
+          id: '1',
+          name: '스타벅스',
+          categoryName: '카페',
+          phone: '',
+          addressName: '서울시',
+          roadAddressName: '서울시 테헤란로',
+          latitude: 37.5665,
+          longitude: 126.9780,
+          distance: 100,
+          placeUrl: '',
+        ),
+      ];
+
+      await notifier.fetchRestaurants(
+        latitude: 37.5665,
+        longitude: 126.9780,
+        placeType: PlaceType.cafe,
+      );
+
+      expect(notifier.state, isA<RestaurantListLoaded>());
+      final state = notifier.state as RestaurantListLoaded;
+      expect(state.restaurants[0].name, '스타벅스');
+    });
   });
 
   group('filteredRestaurantsProvider', () {
@@ -252,12 +288,12 @@ void main() {
         roadAddressName: '서울시 테헤란로',
         latitude: 37.5665,
         longitude: 126.9780,
-        distance: 300,
+        distance: 800,
         placeUrl: '',
       ),
     ];
 
-    test('카테고리 미선택 시 전체 목록을 반환한다', () {
+    test('카테고리 미선택 시 거리 내 전체 목록을 반환한다', () {
       final container = ProviderContainer(
         overrides: [
           restaurantListProvider.overrideWith((_) {
@@ -341,6 +377,61 @@ void main() {
 
       final result = container.read(filteredRestaurantsProvider);
       expect(result, isA<RestaurantListEmpty>());
+    });
+
+    test('거리 필터가 클라이언트 사이드로 적용된다', () {
+      final container = ProviderContainer(
+        overrides: [
+          restaurantListProvider.overrideWith((_) {
+            final notifier = RestaurantListNotifier(MockRestaurantService());
+            notifier.state = RestaurantListLoaded(testRestaurants);
+            return notifier;
+          }),
+          filterProvider.overrideWith((_) {
+            final notifier = FilterNotifier();
+            notifier.setDistance(500);
+            return notifier;
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final result = container.read(filteredRestaurantsProvider);
+      expect(result, isA<RestaurantListLoaded>());
+      final loaded = result as RestaurantListLoaded;
+      // distance 100 and 200 pass, 800 filtered out
+      expect(loaded.restaurants.length, 2);
+      expect(loaded.restaurants[0].name, '한식당');
+      expect(loaded.restaurants[1].name, '일식당');
+    });
+
+    test('카페 모드에서는 카테고리 필터를 적용하지 않는다', () {
+      final container = ProviderContainer(
+        overrides: [
+          restaurantListProvider.overrideWith((_) {
+            final notifier = RestaurantListNotifier(MockRestaurantService());
+            notifier.state = RestaurantListLoaded(testRestaurants);
+            return notifier;
+          }),
+          filterProvider.overrideWith((_) {
+            final notifier = FilterNotifier();
+            notifier.toggleCategory(FoodCategory.korean);
+            return notifier;
+          }),
+          placeTypeProvider.overrideWith((_) {
+            final notifier = PlaceTypeNotifier();
+            notifier.setType(PlaceType.cafe);
+            return notifier;
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final result = container.read(filteredRestaurantsProvider);
+      expect(result, isA<RestaurantListLoaded>());
+      // All restaurants returned regardless of category filter in cafe mode
+      final loaded = result as RestaurantListLoaded;
+      expect(loaded.restaurants.length, 3);
     });
   });
 }

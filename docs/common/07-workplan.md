@@ -299,6 +299,22 @@ Any active status -> Cancelled
   - [x] flutter analyze 에러 0건
 - Result: FilterNotifier에 _load()/_save() 추가 (SharedPreferences JSON 직렬화, filter_state 키). 생성자에서 _load() 호출하여 앱 시작 시 distance/selectedCategories 복원. setDistance/toggleCategory/reset에서 _save() 호출. 잘못된 카테고리 이름 무시 처리. 영속화 테스트 5건 추가 (로드, setDistance 저장, toggleCategory 저장, reset 저장, 잘못된 카테고리 무시). filteredRestaurantsProvider 테스트에 SharedPreferences mock 추가. 전체 109건 통과 (+5건). flutter analyze 에러 0건.
 
+### T020: 식당/카페 선택 토글 + 1km 전체 fetch + 클라이언트 필터링
+- Status: Done
+- Service: lunch-roulette-app
+- Origin: T016
+- Description: 8개 카테고리 키워드 × 5 페이지 = 40회 API 호출 과다 문제를 해결. PlaceType(식당/카페) 선택 토글을 추가하고, 선택된 타입(FD6/CE7)으로 1km 반경 전체를 is_end 기반 자동 페이지네이션으로 수집한 뒤, 거리와 카테고리는 클라이언트 필터링으로 처리하여 API 호출을 2~7회로 절감.
+- Acceptance Criteria:
+  - [x] PlaceType enum + PlaceTypeNotifier 추가 (SharedPreferences 영속화)
+  - [x] RestaurantService.searchAllByCategory() 자동 페이지네이션 메서드 추가 (is_end/pageable_count 기반)
+  - [x] searchByAllCategories() 삭제
+  - [x] FoodCategory에서 cafe 제거, categoryGroupCode 필드 제거 (7개 카테고리 유지)
+  - [x] RestaurantListProvider: placeType 기반 fetch, 캐시 키 변경, 거리 클라이언트 필터링
+  - [x] HomeScreen: SegmentedButton<PlaceType> 토글 추가
+  - [x] FilterScreen: 카페 모드 시 카테고리 섹션 숨김
+  - [x] 테스트 전체 통과 (125건), flutter analyze 0 errors
+- Result: API 호출 40회 → 2~7회로 절감. PlaceType 토글로 식당/카페 전환. 1km 전체 fetch + 클라이언트 사이드 거리/카테고리 필터링. 테스트 125건 통과, flutter analyze 에러 0건.
+
 ### T019: 거리 필터 변경 시 API 재호출 안 되는 버그 수정
 - Status: Done
 - Service: lunch-roulette-app

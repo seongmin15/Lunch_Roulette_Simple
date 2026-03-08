@@ -70,7 +70,7 @@ void main() {
     test('저장된 필터 값이 있으면 로드하여 상태에 반영한다', () async {
       SharedPreferences.setMockInitialValues({
         'filter_state':
-            '{"distance":800,"selectedCategories":["korean","cafe"]}',
+            '{"distance":800,"selectedCategories":["korean","japanese"]}',
       });
 
       final loaded = FilterNotifier();
@@ -80,7 +80,7 @@ void main() {
       expect(loaded.state.distance, 800);
       expect(loaded.state.selectedCategories, {
         FoodCategory.korean,
-        FoodCategory.cafe,
+        FoodCategory.japanese,
       });
     });
 
@@ -126,6 +126,19 @@ void main() {
       final loaded = FilterNotifier();
       await Future<void>.delayed(Duration.zero);
 
+      expect(loaded.state.selectedCategories, {FoodCategory.korean});
+    });
+
+    test('이전에 저장된 cafe 카테고리는 무시된다', () async {
+      SharedPreferences.setMockInitialValues({
+        'filter_state':
+            '{"distance":1000,"selectedCategories":["korean","cafe"]}',
+      });
+
+      final loaded = FilterNotifier();
+      await Future<void>.delayed(Duration.zero);
+
+      // cafe is no longer a valid FoodCategory, should be ignored
       expect(loaded.state.selectedCategories, {FoodCategory.korean});
     });
   });

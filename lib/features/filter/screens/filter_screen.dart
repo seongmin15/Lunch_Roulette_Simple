@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lunch_roulette_app/app/theme.dart';
 import 'package:lunch_roulette_app/features/filter/providers/filter_provider.dart';
 import 'package:lunch_roulette_app/features/filter/providers/filter_state.dart';
+import 'package:lunch_roulette_app/features/home/providers/place_type_provider.dart';
 
 class FilterScreen extends ConsumerWidget {
   const FilterScreen({super.key});
@@ -11,6 +12,7 @@ class FilterScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(filterProvider);
+    final placeType = ref.watch(placeTypeProvider);
     final theme = Theme.of(context);
 
     return Container(
@@ -34,17 +36,19 @@ class FilterScreen extends ConsumerWidget {
           Text('검색 반경', style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           _DistanceSlider(distance: filter.distance),
-          const SizedBox(height: 24),
-          Text('음식 카테고리', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 4),
-          Text(
-            '원하는 카테고리를 선택하세요. 미선택 시 전체 표시됩니다.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          if (placeType == PlaceType.restaurant) ...[
+            const SizedBox(height: 24),
+            Text('음식 카테고리', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Text(
+              '원하는 카테고리를 선택하세요. 미선택 시 전체 표시됩니다.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          _CategorySelector(selectedCategories: filter.selectedCategories),
+            const SizedBox(height: 8),
+            _CategorySelector(selectedCategories: filter.selectedCategories),
+          ],
         ],
       ),
         bottomNavigationBar: SafeArea(
