@@ -81,16 +81,16 @@ Any active status -> Cancelled
 - Result: Flutter 3.41.4 프로젝트 생성 완료. Feature-first 구조(home/filter/roulette/restaurant_detail/history) 설정. flutter analyze 에러 0건.
 
 ### T002: 위치 권한 요청 및 현재 위치 조회 기능
-- Status: Ready
+- Status: Done
 - Service: lunch-roulette-app
 - Description: geolocator/permission_handler를 사용하여 위치 권한을 요청하고, 현재 GPS 좌표를 가져오는 서비스 레이어를 구현한다. 권한 거부 시 수동 주소 입력 폴백 UI도 포함한다.
 - Acceptance Criteria:
-  - [ ] 위치 권한 요청 로직 구현 (permission_handler)
-  - [ ] 현재 위치(위도/경도) 조회 서비스 구현 (geolocator)
-  - [ ] 권한 거부 시 안내 다이얼로그 표시
-  - [ ] 위치 조회 실패 시 에러 처리
-  - [ ] 단위 테스트 작성
-- Result:
+  - [x] 위치 권한 요청 로직 구현 (permission_handler)
+  - [x] 현재 위치(위도/경도) 조회 서비스 구현 (geolocator)
+  - [x] 권한 거부 시 안내 다이얼로그 표시
+  - [x] 위치 조회 실패 시 에러 처리
+  - [x] 단위 테스트 작성
+- Result: LocationService + LocationNotifier(Riverpod StateNotifier) + sealed LocationState 구현. HomeScreen에서 6가지 상태(Initial/Loading/Loaded/PermissionDenied/PermanentlyDenied/ServiceDisabled/Error) 모두 처리. 17개 테스트 전체 통과. flutter analyze 에러 0건.
 
 ### T003: 지도 API 연동 — 주변 식당 목록 조회
 - Status: Ready

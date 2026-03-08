@@ -16,6 +16,7 @@
 |------|------|------|------|
 | 2026-03-08 | 프로젝트 Init | 완료 | Git 초기화, README/.gitignore 생성, remote 설정, 초기 태스크 작성 |
 | 2026-03-08 | T001: Flutter 프로젝트 초기 생성 | 완료 | Flutter 3.41.4 프로젝트 생성, feature-first 구조, 핵심 의존성, 부트스트랩 코드 |
+| 2026-03-08 | T002: 위치 권한 요청 및 현재 위치 조회 | 완료 | geolocator/permission_handler로 위치 서비스 레이어 구현 |
 
 ---
 
@@ -49,3 +50,11 @@
 - **변경된 파일**: pubspec.yaml, lib/main.dart, lib/app/app.dart, lib/app/router.dart, lib/app/theme.dart, lib/features/home/screens/home_screen.dart, .env.example, .env, analysis_options.yaml, test/widget_test.dart, lib/features/*/에 .gitkeep 파일들
 - **의사결정**: Flutter SDK를 C:/flutter에 설치 (시스템에 미설치 상태였음). 테마 seed color로 orange 선택 (음식 앱 컨셉). Material 3 사용.
 - **미완료/후속**: T002 위치 권한 요청 및 현재 위치 조회 기능
+
+### 2026-03-08 — T002: 위치 권한 요청 및 현재 위치 조회 기능
+
+- **작업**: geolocator/permission_handler를 사용한 위치 서비스 레이어 구현. LocationService, LocationState(sealed class), LocationNotifier(StateNotifier), HomeScreen 업데이트, 단위 테스트 작성
+- **계획 범위**: 의존성 추가, Android/iOS 권한 설정, LocationService, LocationState 모델, LocationProvider, HomeScreen 업데이트, 단위 테스트
+- **변경된 파일**: pubspec.yaml, android/app/src/main/AndroidManifest.xml, ios/Runner/Info.plist, lib/services/location_service.dart (신규), lib/features/home/providers/location_state.dart (신규), lib/features/home/providers/location_provider.dart (신규), lib/features/home/screens/home_screen.dart, test/services/location_service_test.dart (신규), test/features/home/providers/location_provider_test.dart (신규), test/widget_test.dart
+- **의사결정**: permission_handler를 aliased import로 사용하여 openAppSettings 이름 충돌 해결. MockLocationService를 직접 구현하여 mockito 코드 생성 없이 테스트 가능하게 함.
+- **미완료/후속**: T003 지도 API 연동 — 주변 식당 목록 조회
